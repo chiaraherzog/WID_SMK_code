@@ -1,0 +1,14 @@
+.Rproj.user
+.Rapp.history
+.Rhistory
+*.RData
+*.Rds
+.Ruserdata
+WID_SMK.pdf
+WID_SMK.log
+*.pdf
+!jamaonc-2015.pdf
+*.png
+*.html
+*.ai
+.DS_Store
