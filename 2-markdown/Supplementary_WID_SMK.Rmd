@@ -1742,7 +1742,7 @@ pagedown::chrome_print("2-markdown/1-figure-panels/s-table-1.html", output = "2-
 
 \textbf{Supplementary Table 2. Overview of CpGs associated with hyper or hypomethylation in smokers compared to never smokers in at least one of the tissues or cell types.}
 
-See separate .csv file.
+See separate .xlsx file.
 
 
 \invisiblesection{Supplementary Table 3. Gene ontology and pathway enrichment for epithelial hypoM.}
