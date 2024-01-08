@@ -1,4 +1,4 @@
-correct_ic <- function(data, scores = scores <- c("WID_SMK_epithelial_hypoM",
+correct_ic <- function(data, scores = c("WID_SMK_epithelial_hypoM",
                                                   "WID_SMK_immune_hypoM",
                                                   "WID_SMK_distal_epithelial_hyperM",
                                                   "WID_SMK_proximal_epithelial_hyperM",

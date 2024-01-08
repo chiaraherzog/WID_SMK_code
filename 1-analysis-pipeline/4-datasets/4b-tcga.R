@@ -72,7 +72,7 @@ for (id in projects){
            time_to_followup = case_when(is.na(days_to_death) ~ days_to_last_follow_up,
                                           !is.na(days_to_death) ~ days_to_death)) |> 
     rename(any_of(lookup)) %>%
-    select(any_of(cols))
+    dplyr::select(any_of(cols))
   
   # Add tobacco history
   query_tobacco <- GDCquery(
@@ -140,8 +140,6 @@ for (id in projects){
   save(pheno, file = paste0("1-analysis-pipeline/4-datasets/1-output/pheno_", substr(id, 6, nchar(id)), ".Rdata"))
 }
   
-
-
 # Merge the two sets
 load("1-analysis-pipeline/4-datasets/1-output/pheno_LUAD.Rdata")
 luad <- pheno
@@ -154,3 +152,17 @@ save(tcga_data, file = "1-analysis-pipeline/4-datasets/1-output/tcga.Rdata")
 # Remove intermediary files
 unlink("1-analysis-pipeline/4-datasets/1-output/pheno_LUSC.Rdata")
 unlink("1-analysis-pipeline/4-datasets/1-output/pheno_LUAD.Rdata")
+
+# Access expression data:
+for (id in project){
+  query <- GDCquery(
+    project = id,
+    data.category = "Transcriptome Profiling",
+    data.type = "Gene Expression Quantification", 
+    workflow.type = "STAR - Counts"
+  )
+  GDCdownload(query = query)
+  data <- GDCprepare(query = query)
+  save(data, file = file.path('~/Documents/Work/data.nosync/tcga_sola/', id, '/expression/data_expression_full.Rdata'))
+  
+}

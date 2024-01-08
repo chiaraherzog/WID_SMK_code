@@ -128,3 +128,12 @@ pheno <- cbind(pheno, res)
 
 save(pheno, file = "1-analysis-pipeline/4-datasets/1-output/cervical-cancer.Rdata")
 
+
+load("1-analysis-pipeline/4-datasets/1-output/cervical-cancer.Rdata")
+identical(colnames(beta), rownames(pheno))
+
+pheno <- pheno |> 
+  dplyr::select(-contains("WID_SMK"))
+source("0-source/WID_SMK.R")
+res <- WID_SMK(beta)
+pheno <- cbind(pheno, res)

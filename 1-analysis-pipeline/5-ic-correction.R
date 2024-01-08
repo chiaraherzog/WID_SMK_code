@@ -1,7 +1,7 @@
 # IC correction: raw data for models
 library(dplyr)
 
-load("1-analysis-pipeline/0-data/data_plot.Rdata")
+load("1-analysis-pipeline/0-data/data.Rdata")
 
 # Correction for buccal
 # Subset data

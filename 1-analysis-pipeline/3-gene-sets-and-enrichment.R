@@ -4,6 +4,8 @@ library(clusterProfiler)
 library(org.Hs.eg.db)
 library(ReactomePA)
 load("1-analysis-pipeline/2-output/WID_SMK_cpgs.Rdata")
+
+table(WID_SMK_cpgs$on_450k_array)
 WID_SMK_cpgs <- WID_SMK_cpgs |> 
   dplyr::filter(chr != "chrX")
 
@@ -20,7 +22,7 @@ sets <- list("epithelial\nhypoM" = epi_hypo, "immune\nhypoM" = imm_hypo,
              "distal\nepithelial\nhyperM" = dist_epi_hyper, "proximal\nepithelial\nhyperM" = prox_epi_hyper)
 save(sets, file = "1-analysis-pipeline/3-output/venn-sets.Rdata")
 
-# 2. Patchway enrichment
+# 2. Pathway enrichment
 # Using "exclusive" genes (i.e. not in another set)
 
 # Gene universe: genes that are associated in genes at intersect of delta betas
@@ -54,7 +56,7 @@ epi_hypo_mf <- clusterProfiler::enrichGO(gene = epi_hypo[!epi_hypo %in% c(imm_hy
                                          keyType = 'SYMBOL',
                                          ont = "MF",
                                          pAdjustMethod = "BH")
-as.data.frame(epi_hypo_mf) # No enrichment
+as.data.frame(epi_hypo_mf) # glucuronosyltransferase activity
 
 epi_hypo_cc <- clusterProfiler::enrichGO(gene = epi_hypo[!epi_hypo %in% c(imm_hypo, dist_epi_hyper, prox_epi_hyper)],
                                          universe = genes,
@@ -92,7 +94,6 @@ imm_hypo_mf <- clusterProfiler::enrichGO(gene = imm_hypo[!imm_hypo %in% c(epi_hy
                                          pAdjustMethod = "BH")
 as.data.frame(imm_hypo_mf) # No enrichment
 
-
 imm_hypo_cc <- clusterProfiler::enrichGO(gene = imm_hypo[!imm_hypo %in% c(epi_hypo, dist_epi_hyper, prox_epi_hyper)],
                                          universe = genes,
                                          OrgDb = org.Hs.eg.db,
@@ -119,7 +120,7 @@ dist_epi_hyper_bp <- clusterProfiler::enrichGO(gene = dist_epi_hyper[!dist_epi_h
                                          keyType = 'SYMBOL',
                                          ont = "BP",
                                          pAdjustMethod = "BH")
-as.data.frame(dist_epi_hyper_bp) # Enrichment for glucoronate metabolism, uronic acid, ...
+as.data.frame(dist_epi_hyper_bp) # No enrichment
 
 dist_epi_hyper_mf <- clusterProfiler::enrichGO(gene = dist_epi_hyper[!dist_epi_hyper %in% c(epi_hypo, imm_hypo, prox_epi_hyper)],
                                          universe = genes,
@@ -127,7 +128,7 @@ dist_epi_hyper_mf <- clusterProfiler::enrichGO(gene = dist_epi_hyper[!dist_epi_h
                                          keyType = 'SYMBOL',
                                          ont = "MF",
                                          pAdjustMethod = "BH")
-as.data.frame(dist_epi_hyper_mf) # Glucoronosyltransferase activity
+as.data.frame(dist_epi_hyper_mf) # No enrichment
 
 dist_epi_hyper_cc <- clusterProfiler::enrichGO(gene = dist_epi_hyper[!dist_epi_hyper %in% c(epi_hypo, imm_hypo, prox_epi_hyper)],
                                          universe = genes,
@@ -145,7 +146,7 @@ dist_epi_hyper_react_all <- enrichPathway(tmp$ENTREZID, organism = "human",
                                           readable = T,
                                           minGSSize = 3)
 x <- as.data.frame(dist_epi_hyper_react_all)
-enrichplot::cnetplot(dist_epi_hyper_react_all) # Oxidation, ADME, ...
+enrichplot::cnetplot(dist_epi_hyper_react_all) # Nuclear receptors, PPARa, lipid metabolism
 
 save(dist_epi_hyper_bp, dist_epi_hyper_mf, dist_epi_hyper_react_all, file = "1-analysis-pipeline/3-output/dist_epi_hyper_GO.Rdata")
 
@@ -156,7 +157,7 @@ prox_epi_hyper_bp <- clusterProfiler::enrichGO(gene = prox_epi_hyper[!prox_epi_h
                                                keyType = 'SYMBOL',
                                                ont = "BP",
                                                pAdjustMethod = "BH")
-as.data.frame(prox_epi_hyper_bp) # No enrichment
+as.data.frame(prox_epi_hyper_bp) # Wnt signaling
 
 prox_epi_hyper_mf <- clusterProfiler::enrichGO(gene = prox_epi_hyper[!prox_epi_hyper %in% c(epi_hypo, imm_hypo, dist_epi_hyper)],
                                                universe = genes,
@@ -164,7 +165,7 @@ prox_epi_hyper_mf <- clusterProfiler::enrichGO(gene = prox_epi_hyper[!prox_epi_h
                                                keyType = 'SYMBOL',
                                                ont = "MF",
                                                pAdjustMethod = "BH")
-as.data.frame(prox_epi_hyper_mf) # Enrichment for RNA binding, poly-pyrimidine tract binding
+as.data.frame(prox_epi_hyper_mf) # polyU RNA binding, pyrimidine
 
 prox_epi_hyper_cc <- clusterProfiler::enrichGO(gene = prox_epi_hyper[!prox_epi_hyper %in% c(epi_hypo, imm_hypo, dist_epi_hyper)],
                                                universe = genes,
@@ -185,7 +186,7 @@ x <- as.data.frame(prox_epi_hyper_react_all)
 enrichplot::cnetplot(prox_epi_hyper_react_all)
 
 save(prox_epi_hyper_mf, prox_epi_hyper_react_all, file = "1-analysis-pipeline/3-output/prox_epi_hyper_GO.Rdata")
-
+rm(list=ls())
 
 # Write tables
 files <- c("1-analysis-pipeline/3-output/epi_hypo_GO.Rdata",
@@ -201,7 +202,7 @@ for (i in files){
                        grepl("dist_epi_hyper", i) ~ "distal_epithelial_hyperM",
                        grepl("prox_epi_hyper", i) ~ "proximal_epithelial_hyperM")
   vars <- ls()
-  vars <- vars[!vars %in% c("i", "files", "vars", "filename", "name")]
+  vars <- vars[grepl("hyper|hypo", vars)]
     
   for (v in vars){
     name = case_when(grepl("bp", v) ~ "GO_BP",
@@ -257,3 +258,5 @@ nrow(cpgs_single) #57840 CpGs
 # Filtering by TSS200
 cpgs_single_tss200 <- cpgs_single[cpgs_single$tss == "TSS200",] # only 4625 left
 save(pcgt_single, cpgs_single, cpgs_single_tss200, file = "0-source/single_occupancy.Rdata")
+
+rm(list=ls());gc()

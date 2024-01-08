@@ -9,8 +9,9 @@ setwd("<dir>") # raw local directory of your choice
 
 # Download pheno
 gse <- getGEO("GSE94876")
+gse <- GEOquery::parseGEO("~/Downloads/GSE94876_series_matrix.txt.gz")
 dir.create("GSE94876")
-pheno <- pData(gse$GSE94876_series_matrix.txt.gz)
+pheno <- pData(gse)
 setwd("GSE94876/") # create a folder
 
 # Download raw data
@@ -76,6 +77,8 @@ colnms <- substr(colnames(beta), 2, 9)
 ind <- match(pheno$title, colnms)
 beta <- beta[,ind]
 colnames(beta) <- rownames(pheno)
+save(beta, file = "~/Documents/Work/data.nosync/GEO/GSE94876/beta_named.Rdata")
+
 pheno$age <- as.numeric(pheno$`age:ch1`)
 pheno$smoking_current <- ifelse(as.character(pheno$`class:ch1`) == "Non-Tobacco User", "Control", as.character(pheno$`class:ch1`))
 pheno$sex <- "male"
