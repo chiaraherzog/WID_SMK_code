@@ -60,7 +60,7 @@ here::i_am("2-markdown/Supplementary_WID_SMK.Rmd")
 
 \large 
 \textbf{Supporting information for}\newline
-Cell- and exposure-specific DNA methylation changes in response to cigarette smoking indicate shared carcinogenic mechanisms with e-cigarette use
+Cigarette smoking and e-cigarette use induce shared DNA methylation changes linked to carcinogenesis
 \vspace{1em}
 
 \normalsize
@@ -1723,21 +1723,20 @@ pagedown::chrome_print("2-markdown/1-figure-panels/s-table-1.html", output = "2-
 \invisiblesection{Supplementary Table 2. Overview of CpGs associated with hyper- or hypomethylation in smokers compared to never smokers in at least one of the tissues or cell types.}
 
 ```{r stable2}
-# load("1-analysis-pipeline/2-output/WID_SMK_cpgs.Rdata")
-# load("1-analysis-pipeline/2-output/plot_matrix.Rdata")
-# 
-# mat <- mat |>
-#   as.data.frame() |>
-#   tibble::rownames_to_column("cg")
-# 
-# table <- WID_SMK_cpgs |>
-#   dplyr::select(-c(umap1, umap2)) |>
-#   dplyr::left_join(mat)
-# 
-# table |>
-#   dplyr::arrange(chr, pos) |>
-#   write.table("Supplementary_Table_2.csv", sep = ",",
-#               quote = F, row.names = F, col.names = T)
+load("1-analysis-pipeline/2-output/WID_SMK_cpgs.Rdata")
+load("1-analysis-pipeline/2-output/plot_matrix.Rdata")
+
+mat <- mat |>
+  as.data.frame() |>
+  tibble::rownames_to_column("cg")
+
+table <- WID_SMK_cpgs |>
+  dplyr::select(-c(umap1, umap2)) |>
+  dplyr::left_join(mat)
+
+table |>
+  dplyr::arrange(chr, pos) |>
+  writexl::write_xlsx("2-markdown/2-tables/Suppl_Table_2.xlsx",col_names = T)
 ```
 
 \textbf{Supplementary Table 2. Overview of CpGs associated with hyper or hypomethylation in smokers compared to never smokers in at least one of the tissues or cell types.}

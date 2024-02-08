@@ -59,7 +59,7 @@ source("0-source/plot_2_rocs.R")
 
 \large 
 \textbf{Supporting information for}\newline
-Smoking-related Products Elicit Distinct Epigenetic Changes in Epithelial and Immune Cells
+Cigarette smoking and e-cigarette use induce shared DNA methylation changes linked to carcinogenesis
 
 \vspace{1em}
 
