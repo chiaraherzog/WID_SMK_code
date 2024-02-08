@@ -1,6 +1,6 @@
 # WID SMK code repository
 
-This code accompanies the manuscript '**DNA methylation changes in response to cigarette smoking are cell- and exposure-specific and indicate shared carcinogenic mechanisms with e-cigarette use**', by Herzog *et al.* and provides the necessary scripts to perform analyses and reproduce figures and display items.
+This code accompanies the manuscript '**Cigarette smoking and e-cigarette use induce shared DNA methylation changes linked to carcinogenesis**', by Herzog *et al.* (2024) and provides the necessary scripts to perform analyses and reproduce figures and display items.
 
 
 ## Guide to contents and structure
