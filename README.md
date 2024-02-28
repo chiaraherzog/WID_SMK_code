@@ -6,10 +6,13 @@ This code accompanies the manuscript '**Cigarette smoking and e-cigarette use in
 
 ## Abstract
 
-Tobacco use is a major modifiable risk factor for adverse health outcomes, including cancer, and elicits profound epigenetic changes thought to be associated with long-term cancer risk. While electronic cigarettes (e-cigarettes) have been advocated as harm reduction alternatives to tobacco products, recent studies have revealed potential detrimental effects, highlighting the urgent need for further research into the molecular and health impacts of e-cigarettes. Here, we applied computational deconvolution methods to dissect the cell- and tissue-specific epigenetic effects of tobacco or e-cigarette use on DNA methylation (DNAme) in over 3,500 buccal/saliva, cervical, or blood samples, spanning epithelial and immune cells at directly and indirectly exposed sites. The 535 identified smoking-related DNAme loci (CpGs) clustered into four functional groups, including detoxification or growth signaling, based on cell type and anatomical site. Loci hypermethylated in buccal epithelial cells of smokers associated with NOTCH1/RUNX3/growth factor receptor signaling also exhibited elevated methylation in cancer tissue and progressing lung carcinoma in situ lesions, and hypermethylation of these sites predicted lung cancer development in buccal samples collected from smokers up to 22 years prior to diagnosis, suggesting a potential role in driving carcinogenesis. Alarmingly, these CpGs were also hypermethylated in e-cigarette users with a limited smoking history. This study sheds light on the cell type-specific changes to the epigenetic landscape induced by smoking-related products.
-
-![](2-markdown/1-figure-panels/graph-abstract.png){width=60%}
-
+<table border="0">
+ <tr>
+    <td width="50%">
+Tobacco use is a major modifiable risk factor for adverse health outcomes, including cancer, and elicits profound epigenetic changes thought to be associated with long-term cancer risk. While electronic cigarettes (e-cigarettes) have been advocated as harm reduction alternatives to tobacco products, recent studies have revealed potential detrimental effects, highlighting the urgent need for further research into the molecular and health impacts of e-cigarettes. Here, we applied computational deconvolution methods to dissect the cell- and tissue-specific epigenetic effects of tobacco or e-cigarette use on DNA methylation (DNAme) in over 3,500 buccal/saliva, cervical, or blood samples, spanning epithelial and immune cells at directly and indirectly exposed sites. The 535 identified smoking-related DNAme loci (CpGs) clustered into four functional groups, including detoxification or growth signaling, based on cell type and anatomical site. Loci hypermethylated in buccal epithelial cells of smokers associated with NOTCH1/RUNX3/growth factor receptor signaling also exhibited elevated methylation in cancer tissue and progressing lung carcinoma in situ lesions, and hypermethylation of these sites predicted lung cancer development in buccal samples collected from smokers up to 22 years prior to diagnosis, suggesting a potential role in driving carcinogenesis. Alarmingly, these CpGs were also hypermethylated in e-cigarette users with a limited smoking history. This study sheds light on the cell type-specific changes to the epigenetic landscape induced by smoking-related products.</td>
+<td width="50%"><img src="2-markdown/1-figure-panels/graph-abstract.png" alt="graphical abstract"/></td>
+</tr>
+</table>
 
 ## Guide to contents and structure
 
@@ -39,8 +42,9 @@ Summary data, or data for plotting are provided in outputs of scripts.
 
 <table border="0">
  <tr>
-    <td>To compute the new smoking indices in your dataset, please take a look at the [WID.smk](https://github.com/chiaraherzog/WID.smk) package.</td>
-    <td><img src="asset/widsmk.png" /></td>
+    <td width="30%"><img src="asset/widsmk.png" /></td>
+    <td width="70%">
+    To compute the new smoking indices in your dataset, please take a look at the [WID.smk](https://github.com/chiaraherzog/WID.smk) package.</td>
  </tr>
 </table>
 
