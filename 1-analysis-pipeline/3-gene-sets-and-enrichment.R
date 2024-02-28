@@ -1,8 +1,12 @@
 # 3 Pathway enrichment and gene sets -------------------
+
+cat("Enriching subsets of CpGs ----------------------- \n")
+
 library(IlluminaHumanMethylationEPICanno.ilm10b4.hg19)
 library(clusterProfiler)
 library(org.Hs.eg.db)
 library(ReactomePA)
+library(dplyr)
 load("1-analysis-pipeline/2-output/WID_SMK_cpgs.Rdata")
 
 table(WID_SMK_cpgs$on_450k_array)

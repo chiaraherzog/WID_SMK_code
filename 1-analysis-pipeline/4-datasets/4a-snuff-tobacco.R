@@ -5,27 +5,27 @@ library(ChAMP)
 options(timeout = max(300, getOption("timeout")))
 options(download.file.method.GEOquery = "wget")
 
-setwd("<dir>") # raw local directory of your choice
+# setwd("<dir>") # raw local directory of your choice
+dir <- '~/Documents/Work/data.nosync/GEO/'
+
 
 # Download pheno
 gse <- getGEO("GSE94876")
-gse <- GEOquery::parseGEO("~/Downloads/GSE94876_series_matrix.txt.gz")
-dir.create("GSE94876")
 pheno <- pData(gse)
-setwd("GSE94876/") # create a folder
+dir.create(file.path(dir, "GSE94876/"))
 
 # Download raw data
 list.files()
 getGEOSuppFiles("GSE94876", filter_regex = "GSE94876_matrix-signal-intensities.txt.gz",
                 fetch_files = T)
-gunzip("GSE94876/GSE94876_matrix-signal-intensities.txt.gz")
-file.copy(from = "GSE94876/GSE94876_matrix-signal-intensities.txt",
-          to = "./")
+gunzip(file.path(dir, "GSE94876/GSE94876/GSE94876_matrix-signal-intensities.txt.gz"))
+file.copy(from = file.path(dir, "GSE94876/GSE94876/GSE94876_matrix-signal-intensities.txt"),
+          to = file.path(dir, "GSE94876/"))
 unlink("GSE94876/", recursive = T)
 
 # Preprocess raw data from signal intensities
-readLines("GSE94876_matrix-signal-intensities.txt", n = 1)
-Mset <- readGEORawFile(filename = "GSE94876_matrix-signal-intensities.txt",
+readLines(file.path(dir, "GSE94876/GSE94876_matrix-signal-intensities.txt"), n = 1)
+Mset <- readGEORawFile(filename = file.path(dir, "GSE94876/GSE94876_matrix-signal-intensities.txt"),
                        sep = "\t",
                        Uname = "Signal_A",
                        Mname = "Signal_B",
@@ -44,9 +44,9 @@ plotQC(qc) # QC looks ok
 low_intensity_samples <- rownames(qc)[qc$mMed<INTENSITY_THRESHOLD | qc$uMed<INTENSITY_THRESHOLD] # no samples with intensity below threshold
 
 # Read in detP
-colnames <- strsplit(readLines("GSE94876_matrix-signal-intensities.txt", n = 1), "\t")[[1]]
+colnames <- strsplit(readLines(file.path(dir, "GSE94876/GSE94876_matrix-signal-intensities.txt"), n = 1), "\t")[[1]]
 select <- sort(grep("Detection.Pval",colnames))
-detP <- data.table::fread("GSE94876_matrix-signal-intensities.txt",
+detP <- data.table::fread(file.path(dir, "GSE94876/GSE94876_matrix-signal-intensities.txt"),
                           sep = "\t",
                           select = select)
 
@@ -77,7 +77,7 @@ colnms <- substr(colnames(beta), 2, 9)
 ind <- match(pheno$title, colnms)
 beta <- beta[,ind]
 colnames(beta) <- rownames(pheno)
-save(beta, file = "~/Documents/Work/data.nosync/GEO/GSE94876/beta_named.Rdata")
+save(beta, file = file.path(dir, "GSE94876/beta_named.Rdata"))
 
 pheno$age <- as.numeric(pheno$`age:ch1`)
 pheno$smoking_current <- ifelse(as.character(pheno$`class:ch1`) == "Non-Tobacco User", "Control", as.character(pheno$`class:ch1`))

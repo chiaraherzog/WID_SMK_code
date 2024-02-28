@@ -13,9 +13,16 @@ header-includes:
   \usepackage{pdfpages}
   \usepackage{graphicx}
   \usepackage{siunitx}
+params:
+  args: ''
 ---
 
-```{r setup, include=FALSE, message=FALSE, echo=FALSE}
+```{r read_arg, include = F}
+args <-  params$args
+eval <- args[1]
+```
+
+```{r setup, include=FALSE, message=FALSE, echo=FALSE, eval = T}
 library(knitr)
 library(dplyr)
 library(tidyverse)
@@ -32,7 +39,8 @@ library(ComplexHeatmap)
 library(ggtext)
 knitr::opts_chunk$set(message = F,
                       warning = F,
-                      echo = F, eval = F)
+                      echo = F,
+                      eval = eval)
 # # 
 # # Colour palette
 cols <- MetBrewer::met.brewer("Hokusai1", n = 9)
@@ -44,6 +52,9 @@ cols3 <- colorRampPalette(cols2)(16)
 theme_gtsummary_journal(journal = "nejm")
 theme_gtsummary_compact()
 
+# # here
+here::i_am("2-markdown/Supplementary_WID_SMK.Rmd")
+
 # # Functions
 source(here("0-source/correct_ic.R"))
 source(here("0-source/smallAUCplot.R"))
@@ -51,7 +62,6 @@ source(here("0-source/manhattan.R"))
 source(here("0-source/qqplot.R"))
 source(here("0-source/plot_3_rocs.R"))
 source(here("0-source/plot_2_rocs.R"))
-here::i_am("2-markdown/Supplementary_WID_SMK.Rmd")
 ```
 
 
@@ -74,8 +84,9 @@ email: martin.widschwender@uibk.ac.at
 
 \textbf{This PDF file includes:}
 
-> Figures S1 to S14 \newline
-> Tables S1 to S11
+> Figures S1 to S13 \newline
+> Tables S1 to S11\newline
+> Information for Supplementary Movie 1
 
 \newpage
 
@@ -99,145 +110,145 @@ email: martin.widschwender@uibk.ac.at
 
 \invisiblesection{Supplementary Figure 2. Manhattan and qq-plots for smoking-associated CpGs in buccal samples.}
 
-```{r manh-qq-plots}
-# # Need to be manually assembled
-# # Buccal -------------
-# lowmi <- read.csv("0-source/lowMI_names.csv", header = F)
-# notonepicv2 <- read.csv("0-source/notonEPICv2_names.csv", header = F)
-# db_buccal <- readRDS("1-analysis-pipeline/1-delta-beta/1a-buccal/delta-beta.Rds") |>
-#   as.data.frame() |>
-#   tibble::rownames_to_column("cg") |>
-#   dplyr::filter(!cg %in% c(notonepicv2$V1,lowmi$V1)) |>
-#   mutate(padj = p.adjust(type, method = "holm"),
-#          sig = ifelse(padj < 0.05, "yes", "no"))
-# 
-# db <- db_buccal
-# manhplot <- manhattan(db, sample = "buccal")
-# ggsave(plot = manhplot,
-#        filename = "2-markdown/1-figure-panels/ewas-buccal.png", width = 10, height = 4)
-# qqplot(db_buccal$type, filename = "2-markdown/1-figure-panels/qq-buccal.png")
-# 
-# # Cervical -------------
-# db_cervical <- readRDS("1-analysis-pipeline/1-delta-beta/1b-cervical/delta-beta.Rds") |>
-#   as.data.frame() |>
-#   tibble::rownames_to_column("cg") |>
-#   dplyr::filter(!cg %in% c(notonepicv2$V1,lowmi$V1)) |>
-#   mutate(padj = p.adjust(type, method = "holm"),
-#          sig = ifelse(padj < 0.05, "yes", "no"))
-# 
-# db <- db_cervical
-# manhplot <- manhattan(db, sample = "cervical")
-# ggsave(plot = manhplot,
-#        filename = "2-markdown/1-figure-panels/ewas-cervical.png", width = 10, height = 4)
-# qqplot(db_cervical$type, filename = "2-markdown/1-figure-panels/qq-cervical.png")
-# 
-# # Blood -------------
-# db_blood <- readRDS("1-analysis-pipeline/1-delta-beta/1c-blood/delta-beta.Rds") |>
-#   as.data.frame() |>
-#   tibble::rownames_to_column("cg") |>
-#   dplyr::filter(!cg %in% c(notonepicv2$V1,lowmi$V1)) |>
-#   mutate(padj = p.adjust(type, method = "holm"),
-#          sig = ifelse(padj < 0.05, "yes", "no"))
-# 
-# db <- db_blood
-# manhplot <- manhattan(db, sample = "blood")
-# ggsave(plot = manhplot,
-#        filename = "2-markdown/1-figure-panels/ewas-blood.png", width = 10, height = 4)
-# qqplot(db_blood$type, filename = "2-markdown/1-figure-panels/qq-blood.png")
-# 
-# 
-# # Histograms
-# db_buccal <- readRDS("1-analysis-pipeline/1-delta-beta/1a-buccal/delta-beta.Rds") |>
-#   as.data.frame() |>
-#   tibble::rownames_to_column("cg") |>
-#   dplyr::filter(!cg %in% c(notonepicv2$V1,lowmi$V1)) |>
-#   mutate(padj = p.adjust(type, method = "holm"),
-#          sig = ifelse(padj < 0.05, "yes", "no")) |>
-#   tidyr::pivot_longer(db_epithelial:db_immune,
-#                       values_to = "beta",
-#                       names_to = "dbtype")
-# 
-# histplot <- db_buccal |>
-#   ggplot(aes(x = beta,
-#              fill = dbtype)) +
-#   geom_histogram(alpha = 0.7,
-#                  bins = 200) +
-#   theme_minimal() +
-#   labs(x = "∆β",
-#        y = "n") +
-#   theme(
-#     legend.position = "top",
-#     aspect.ratio = 1
-#     ) +
-#   scale_fill_manual(values = cols[c(3, 5)],
-#                      name = "",
-#                      labels = c("epithelial ∆β",
-#                                 "immune ∆β"))
-# ggsave(plot = histplot,
-#        filename = "2-markdown/1-figure-panels/histplot-buccal.png", width = 4, height = 4)
-# 
-# db_cervical <- readRDS("1-analysis-pipeline/1-delta-beta/1b-cervical/delta-beta.Rds") |>
-#   as.data.frame() |>
-#   tibble::rownames_to_column("cg") |>
-#   dplyr::filter(!cg %in% c(notonepicv2$V1,lowmi$V1)) |>
-#   mutate(padj = p.adjust(type, method = "holm"),
-#          sig = ifelse(padj < 0.05, "yes", "no")) |>
-#   tidyr::pivot_longer(db_epithelial:db_immune,
-#                       values_to = "beta",
-#                       names_to = "dbtype")
-# 
-# histplot <- db_cervical |>
-#   ggplot(aes(x = beta,
-#              fill = dbtype)) +
-#   geom_histogram(alpha = 0.7,
-#                  bins = 200) +
-#   theme_minimal() +
-#   labs(x = "∆β",
-#        y = "n") +
-#   theme(
-#     legend.position = "top",
-#     aspect.ratio = 1
-#     ) +
-#   scale_fill_manual(values = cols[c(3, 5)],
-#                      name = "",
-#                      labels = c("epithelial ∆β",
-#                                 "immune ∆β"))
-# ggsave(plot = histplot,
-#        filename = "2-markdown/1-figure-panels/histplot-cervical.png", width = 4, height = 4)
-# 
-# 
-# db_blood <- readRDS("1-analysis-pipeline/1-delta-beta/1c-blood/delta-beta.Rds") |>
-#   as.data.frame() |>
-#   tibble::rownames_to_column("cg") |>
-#   dplyr::filter(!cg %in% c(notonepicv2$V1,lowmi$V1)) |>
-#   mutate(padj = p.adjust(type, method = "holm"),
-#          sig = ifelse(padj < 0.05, "yes", "no")) |>
-#   dplyr::filter(!cg %in% c(notonepicv2$V1,lowmi$V1)) |>
-#   tidyr::pivot_longer(db_lymphoid:db_myeloid,
-#                       values_to = "beta",
-#                       names_to = "dbtype")
-# 
-# histplot <- db_blood |>
-#   ggplot(aes(x = beta,
-#              fill = dbtype)) +
-#   geom_histogram(alpha = 0.7,
-#                  bins = 200) +
-#   theme_minimal() +
-#   labs(x = "∆β",
-#        y = "n") +
-#   theme(
-#     legend.position = "top",
-#     aspect.ratio = 1
-#     ) +
-#   scale_fill_manual(values = cols[c(3, 5)],
-#                      name = "",
-#                      labels = c("lymphoid ∆β",
-#                                 "myeloid ∆β"))
-# ggsave(plot = histplot,
-#        filename = "2-markdown/1-figure-panels/histplot-blood.png", width = 4, height = 4)
+```{r s2-4-manh-qq-plots}
+# Need to be manually assembled
+# Buccal -------------
+lowmi <- read.csv(here("0-source/lowMI_names.csv"), header = F)
+notonepicv2 <- read.csv(here("0-source/notonEPICv2_names.csv"), header = F)
+db_buccal <- readRDS(here("1-analysis-pipeline/1-delta-beta/1a-buccal/delta-beta.Rds")) |>
+  as.data.frame() |>
+  tibble::rownames_to_column("cg") |>
+  dplyr::filter(!cg %in% c(notonepicv2$V1,lowmi$V1)) |>
+  mutate(padj = p.adjust(type, method = "holm"),
+         sig = ifelse(padj < 0.05, "yes", "no"))
+
+db <- db_buccal
+manhplot <- manhattan(db, sample = "buccal")
+ggsave(plot = manhplot,
+       filename = here("2-markdown/1-figure-panels/ewas-buccal.png"), width = 10, height = 4)
+qqplot(db_buccal$type, filename = here("2-markdown/1-figure-panels/qq-buccal.png"))
+
+# Cervical -------------
+db_cervical <- readRDS(here("1-analysis-pipeline/1-delta-beta/1b-cervical/delta-beta.Rds")) |>
+  as.data.frame() |>
+  tibble::rownames_to_column("cg") |>
+  dplyr::filter(!cg %in% c(notonepicv2$V1,lowmi$V1)) |>
+  mutate(padj = p.adjust(type, method = "holm"),
+         sig = ifelse(padj < 0.05, "yes", "no"))
+
+db <- db_cervical
+manhplot <- manhattan(db, sample = "cervical")
+ggsave(plot = manhplot,
+       filename = here("2-markdown/1-figure-panels/ewas-cervical.png"), width = 10, height = 4)
+qqplot(db_cervical$type, filename = here("2-markdown/1-figure-panels/qq-cervical.png"))
+
+# Blood -------------
+db_blood <- readRDS(here("1-analysis-pipeline/1-delta-beta/1c-blood/delta-beta.Rds")) |>
+  as.data.frame() |>
+  tibble::rownames_to_column("cg") |>
+  dplyr::filter(!cg %in% c(notonepicv2$V1,lowmi$V1)) |>
+  mutate(padj = p.adjust(type, method = "holm"),
+         sig = ifelse(padj < 0.05, "yes", "no"))
+
+db <- db_blood
+manhplot <- manhattan(db, sample = "blood")
+ggsave(plot = manhplot,
+       filename = here("2-markdown/1-figure-panels/ewas-blood.png"), width = 10, height = 4)
+qqplot(db_blood$type, filename = here("2-markdown/1-figure-panels/qq-blood.png"))
+
+
+# Histograms
+db_buccal <- readRDS(here("1-analysis-pipeline/1-delta-beta/1a-buccal/delta-beta.Rds")) |>
+  as.data.frame() |>
+  tibble::rownames_to_column("cg") |>
+  dplyr::filter(!cg %in% c(notonepicv2$V1,lowmi$V1)) |>
+  mutate(padj = p.adjust(type, method = "holm"),
+         sig = ifelse(padj < 0.05, "yes", "no")) |>
+  tidyr::pivot_longer(db_epithelial:db_immune,
+                      values_to = "beta",
+                      names_to = "dbtype")
+
+histplot <- db_buccal |>
+  ggplot(aes(x = beta,
+             fill = dbtype)) +
+  geom_histogram(alpha = 0.7,
+                 bins = 200) +
+  theme_minimal() +
+  labs(x = "∆β",
+       y = "n") +
+  theme(
+    legend.position = "top",
+    aspect.ratio = 1
+    ) +
+  scale_fill_manual(values = cols[c(3, 5)],
+                     name = "",
+                     labels = c("epithelial ∆β",
+                                "immune ∆β"))
+ggsave(plot = histplot,
+       filename = here("2-markdown/1-figure-panels/histplot-buccal.png"), width = 4, height = 4)
+
+db_cervical <- readRDS(here("1-analysis-pipeline/1-delta-beta/1b-cervical/delta-beta.Rds")) |>
+  as.data.frame() |>
+  tibble::rownames_to_column("cg") |>
+  dplyr::filter(!cg %in% c(notonepicv2$V1,lowmi$V1)) |>
+  mutate(padj = p.adjust(type, method = "holm"),
+         sig = ifelse(padj < 0.05, "yes", "no")) |>
+  tidyr::pivot_longer(db_epithelial:db_immune,
+                      values_to = "beta",
+                      names_to = "dbtype")
+
+histplot <- db_cervical |>
+  ggplot(aes(x = beta,
+             fill = dbtype)) +
+  geom_histogram(alpha = 0.7,
+                 bins = 200) +
+  theme_minimal() +
+  labs(x = "∆β",
+       y = "n") +
+  theme(
+    legend.position = "top",
+    aspect.ratio = 1
+    ) +
+  scale_fill_manual(values = cols[c(3, 5)],
+                     name = "",
+                     labels = c("epithelial ∆β",
+                                "immune ∆β"))
+ggsave(plot = histplot,
+       filename = here("2-markdown/1-figure-panels/histplot-cervical.png"), width = 4, height = 4)
+
+
+db_blood <- readRDS(here("1-analysis-pipeline/1-delta-beta/1c-blood/delta-beta.Rds")) |>
+  as.data.frame() |>
+  tibble::rownames_to_column("cg") |>
+  dplyr::filter(!cg %in% c(notonepicv2$V1,lowmi$V1)) |>
+  mutate(padj = p.adjust(type, method = "holm"),
+         sig = ifelse(padj < 0.05, "yes", "no")) |>
+  dplyr::filter(!cg %in% c(notonepicv2$V1,lowmi$V1)) |>
+  tidyr::pivot_longer(db_lymphoid:db_myeloid,
+                      values_to = "beta",
+                      names_to = "dbtype")
+
+histplot <- db_blood |>
+  ggplot(aes(x = beta,
+             fill = dbtype)) +
+  geom_histogram(alpha = 0.7,
+                 bins = 200) +
+  theme_minimal() +
+  labs(x = "∆β",
+       y = "n") +
+  theme(
+    legend.position = "top",
+    aspect.ratio = 1
+    ) +
+  scale_fill_manual(values = cols[c(3, 5)],
+                     name = "",
+                     labels = c("lymphoid ∆β",
+                                "myeloid ∆β"))
+ggsave(plot = histplot,
+       filename = here("2-markdown/1-figure-panels/histplot-blood.png"), width = 4, height = 4)
 ```
 
-\includegraphics[trim = 0 11cm 0 0]{1-figure-panels/SFigure_1_buccalEWAS.pdf}
+\includegraphics[trim = 0 11cm 0 0]{1-figure-panels/s2_ewas-buccal.pdf}
 
 \textbf{Supplementary Figure 2. Manhattan and qq-plots for smoking-associated CpGs in buccal samples after accounting for age and immune cell proportion. a} Manhattan plot for smoking EWAS in buccal samples. CpGs were considered significant if they passed Bonferroni correction (equivalent to p \textless 8.2e-08). \textbf{b} qq plot for expected and observed p values in buccal sample EWAS. \textbf{c} delta beta (∆ β) values by epithelial and immune fraction in buccal samples.
 
@@ -245,7 +256,7 @@ email: martin.widschwender@uibk.ac.at
 
 \invisiblesection{Supplementary Figure 3. Manhattan and qq-plots for smoking-associated CpGs in blood samples.}
 
-\includegraphics[trim = 0 11cm 0 0]{1-figure-panels/SFigure_3_bloodEWAS.pdf}
+\includegraphics[trim = 0 11cm 0 0]{1-figure-panels/s3_ewas-blood.pdf}
 
 \textbf{Supplementary Figure 3. Manhattan and qq-plots for smoking-associated CpGs in blood samples after accounting for age and myeloid cell proportion. a} Manhattan plot for smoking EWAS in blood samples. CpGs were considered significant if they passed Bonferroni correction (equivalent to p \textless 7.9e-08). \textbf{b} qq-plot for expected and observed p values in blood sample EWAS. \textbf{c} delta beta (∆ β) values by lymphoid and myeloid fraction in blood samples.
 
@@ -253,7 +264,7 @@ email: martin.widschwender@uibk.ac.at
 
 \invisiblesection{Supplementary Figure 4. Manhattan and qq-plots for smoking-associated CpGs in cervical samples.}
 
-\includegraphics[trim = 0 11cm 0 0]{1-figure-panels/SFigure_2_cervicalEWAS.pdf}
+\includegraphics[trim = 0 11cm 0 0]{1-figure-panels/s4_ewas-cervical.pdf}
 
 \textbf{Supplementary Figure 4. Manhattan and qq-plots for smoking-associated CpGs in cervical samples after accounting for age and immune cell proportion. a} Manhattan plot for smoking EWAS in cervical samples. CpGs were considered significant if they passed Bonferroni correction (equivalent to p \textless 7.9e-08). \textbf{b} q-q plot for expected and observed p values in cervical sample EWAS. \textbf{c} delta beta (∆ β) values by epithelial and immune fraction in cervical samples.
 
@@ -261,8 +272,8 @@ email: martin.widschwender@uibk.ac.at
 
 \invisiblesection{Supplementary Figure 5. Clustering results for cell-specific delta-beta values of significant CpGs using two different approaches.}
 
-```{r extfig5-clustering}
-load("1-analysis-pipeline/2-output/WID_SMK_cpgs.Rdata")
+```{r s5-clustering}
+load(here("1-analysis-pipeline/2-output/WID_SMK_cpgs.Rdata"))
 
 WID_SMK_cpgs <- WID_SMK_cpgs |>
   dplyr::mutate(set = gsub("_", " ", set),
@@ -292,12 +303,12 @@ a <- WID_SMK_cpgs |>
   scale_colour_manual(values = cols[c(9, 6, 3, 1)]) +
   guides(colour = guide_legend(nrow = 2, byrow = T))
 
-grDevices::cairo_pdf("2-markdown/1-figure-panels/s5a.pdf", width = 5, height = 5)
+grDevices::cairo_pdf(here("2-markdown/1-figure-panels/s5a.pdf"), width = 5, height = 5)
 print(a)
 dev.off()
 
 # Additional clustering approach (delta-beta matrix)
-load("1-analysis-pipeline/2-output/plot_matrix.Rdata")
+load(here("1-analysis-pipeline/2-output/plot_matrix.Rdata"))
 colnames(mat) <- c('buccal\n∆β epithelial',
                    'buccal\n∆β immune',
                    'cervical\n∆β epithelial',
@@ -326,7 +337,7 @@ b<- ComplexHeatmap::Heatmap(mat,
                                                            colors = rev(cols2))
                         )
 
-grDevices::cairo_pdf("2-markdown/1-figure-panels/s5b.pdf", width = 4, height = 8)
+grDevices::cairo_pdf(here("2-markdown/1-figure-panels/s5b.pdf"), width = 4, height = 8)
 print(b)
 dev.off()
 
@@ -340,21 +351,21 @@ dev.off()
 
 \invisiblesection{Supplementary Figure 6. Polycomb group target enrichment in CpGs in the four sets, association with expression, and overlap with previously identified sites.}
 
-```{r extfig7}
+```{r s6-pcgt}
 # a: PCGT enrichment ---------------------------
 library(IlluminaHumanMethylationEPICanno.ilm10b4.hg19)
 
 # Load single occupancy CpGs - previously identified, based on Lee et al. 2006 publication; single occupancy in TSS200 by either EZH, SUZ12,
-load("0-source/single_occupancy.Rdata")
-source("0-source/enrich.R")
-load("1-analysis-pipeline/3-output/venn-sets.Rdata")
+load(here("0-source/single_occupancy.Rdata"))
+source(here("0-source/enrich.R"))
+load(here("1-analysis-pipeline/3-output/venn-sets.Rdata"))
 
 # Gene universe: genes that are associated in genes at intersect of delta betas
-db_buccal <- readRDS("1-analysis-pipeline/1-delta-beta/1a-buccal/delta-beta.Rds")
-db_blood <- readRDS("1-analysis-pipeline/1-delta-beta/1c-blood/delta-beta.Rds")
-db_cervical <- readRDS("1-analysis-pipeline/1-delta-beta/1b-cervical/delta-beta.Rds")
-lowmi <- read.csv("0-source/lowMI_names.csv", header = F)
-notonepicv2 <- read.csv("0-source/notonEPICv2_names.csv", header = F)
+db_buccal <- readRDS(here("1-analysis-pipeline/1-delta-beta/1a-buccal/delta-beta.Rds"))
+db_blood <- readRDS(here("1-analysis-pipeline/1-delta-beta/1c-blood/delta-beta.Rds"))
+db_cervical <- readRDS(here("1-analysis-pipeline/1-delta-beta/1b-cervical/delta-beta.Rds"))
+lowmi <- read.csv(here("0-source/lowMI_names.csv"), header = F)
+notonepicv2 <- read.csv(here("0-source/notonEPICv2_names.csv"), header = F)
 cpgs <- intersect(rownames(db_buccal), intersect(rownames(db_blood), rownames(db_cervical)))
 rm(db_buccal, db_blood, db_cervical);gc()
 cpgs <- cpgs[!cpgs %in% c(notonepicv2$V1, lowmi$V1)]
@@ -389,12 +400,12 @@ ext6a <- df |> ggplot(aes(x = set,
   theme(legend.position = "none") +
   scale_colour_manual(values = cols[c(3, 9, 6, 1)])
 
-grDevices::cairo_pdf("2-markdown/1-figure-panels/ext6a.pdf", width = 4, height = 5)
+grDevices::cairo_pdf(here("2-markdown/1-figure-panels/ext6a.pdf"), width = 4, height = 5)
 print(ext6a)
 dev.off()
 # 
 # # b: expression ---------------------------
-load(here("1-analysis-pipeline", "9-output", "expression.Rdata"))
+load(here("1-analysis-pipeline", "8-output", "expression.Rdata"))
 
 ext6b <- df |> 
   ggplot(aes(x = p)) +
@@ -405,12 +416,12 @@ ext6b <- df |>
   theme(aspect.ratio = 1)
 
 
-grDevices::cairo_pdf("2-markdown/1-figure-panels/ext6b.pdf", width = 6.5, height = 5)
+grDevices::cairo_pdf(here("2-markdown/1-figure-panels/ext6b.pdf"), width = 6.5, height = 5)
 print(ext6b)
 dev.off()
 
 # c: expression ---------------------------
-load(here("1-analysis-pipeline", "9-output", "expression.Rdata"))
+load(here("1-analysis-pipeline", "8-output", "expression.Rdata"))
 
 ext6c <- df |> 
   dplyr::mutate(padj = p.adjust(p)) |> 
@@ -427,22 +438,22 @@ ext6c <- df |>
   scale_fill_manual(values = cols2[c(1, 2, 3, 5, 7, 8)])
 
 
-grDevices::cairo_pdf("2-markdown/1-figure-panels/ext6c.pdf", width = 6.5, height = 5)
+grDevices::cairo_pdf(here("2-markdown/1-figure-panels/ext6c.pdf"), width = 6.5, height = 5)
 print(ext6c)
 dev.off()
 
 # # d: previous studies ---------------------------
-load("1-analysis-pipeline/2-output/WID_SMK_cpgs.Rdata")
+load(here("1-analysis-pipeline/2-output/WID_SMK_cpgs.Rdata"))
 WID_SMK_cpgs <- WID_SMK_cpgs |>
   dplyr::filter(chr != "chrX")
 
 # Joehanes
-ewas <- readxl::read_xlsx("0-source/joehanes-suppl.xlsx", sheet = 3, skip = 2) |>
+ewas <- readxl::read_xlsx(here("0-source/joehanes-suppl.xlsx"), sheet = 3, skip = 2) |>
   janitor::clean_names()
 probes <- data.frame(source = rep("Joehanes", length(ewas$probe_id)),
                      cg = ewas$probe_id)
 # Teschendorff
-tx <- pdftools::pdf_text("0-source/jamaonc-2015.pdf")
+tx <- pdftools::pdf_text(here("0-source/jamaonc-2015.pdf"))
 tmp <- unlist(stringr::str_split(tx[25:111], "[\\r\\n]+")) # separating lines
 tmp1 <- stringr::str_split(tmp, "   ") # splitting
 # sum(grepl("cg", tmp1)) # 1501 CpGs as reported in paper
@@ -454,12 +465,12 @@ tmp <- data.frame(source = rep("Teschendorff", length(cgs)),
 probes <- rbind(probes, tmp)
 
 # Christiansen
-christ <- readxl::read_xlsx("0-source/christiansen_13148_2021_1018_MOESM2_ESM.xlsx", sheet = 2, skip = 1) |>
+christ <- readxl::read_xlsx(here("0-source/christiansen_13148_2021_1018_MOESM2_ESM.xlsx"), sheet = 2, skip = 1) |>
   dplyr::filter(!IlmnID %in% probes$cg)
 tmp <- data.frame(source = rep("Christiansen", length(christ$IlmnID)),
                   cg = christ$IlmnID)
 probes <- rbind(probes, tmp)
-load("1-analysis-pipeline/2-output/WID_SMK_cpgs.Rdata")
+load(here("1-analysis-pipeline/2-output/WID_SMK_cpgs.Rdata"))
 tmp <- WID_SMK_cpgs |>
   dplyr::left_join(probes)
 
@@ -506,12 +517,12 @@ ext6d <- data |>
 
 plot <- (ext6a|ext6b)/(ext6c|ext6d) + plot_annotation(tag_levels = "a") + plot_layout(widths = c(0.25, 0.75))
 
-grDevices::cairo_pdf("2-markdown/1-figure-panels/SFigure_6_pcgt.pdf", width = 11, height = 13)
+grDevices::cairo_pdf(here("2-markdown/1-figure-panels/s6_pcgt.pdf"), width = 11, height = 13)
 print(plot)
 dev.off()
 ```
 
-\includegraphics{1-figure-panels/SFigure_6_pcgt.pdf}
+\includegraphics{1-figure-panels/s6_pcgt.pdf}
 
 \textbf{Supplementary Figure 6. Polycomb group target enrichment in CpGs in the four sets, association with expression, and overlap with previously identified sites. a} Enrichment for Polycomb group target genes amongst CpGs in the different sets. \textbf{b} Histogram of p values for correlation of CpG loci with matched gene expression in TCGA-LUAD and TCGA-LUSC samples, based on genomic location of the CpG. \textbf{c} Density plot showing the association of CpG methylation with gene expression by genomic region. Only CpGs that were significantly correlated with expression after Bonferroni correction were included (p \textless 0.05, 55/98). \textbf{d} Overlap of CpGs with previously identified smoking CpGs in studies by Joehanes et al., Teschendorff et al., or Christiansen et al.
 
@@ -520,101 +531,101 @@ dev.off()
 
 \invisiblesection{Supplementary Figure 7. Epigenetically inferred cell type composition in datasets used in this study.}
 
-```{r extfig4-epidish}
-# source("~/Dropbox/src/DNAm-tools/expand_celltypes.R")
-# 
-# # a smoking --------------------
-# load("1-analysis-pipeline/0-data/data.Rdata")
-# disc_val <- data |>
-#   dplyr::mutate(dataset = ifelse(dataset == "vaping set", "e-cigarette set", dataset)) |>
-#   dplyr::filter(!(dataset == "discovery set" & smoking_history == "Ex-smoker"))
-# 
-# load("1-analysis-pipeline/4-datasets/1-output/snuff_tobacco.Rdata")
-# snuff <- pheno |>
-#   dplyr::mutate(dataset = "moist snuff tobacco set",
-#                 sampletype = "saliva",
-#                 smoking_history = case_when(smoking_current == "Control" ~ "Non-smoker",
-#                                             smoking_current == "Moist Snuff User" ~ "Moist snuff tobacco user",
-#                                             smoking_current == "Cigarette Smoker" ~ "Smoker"))
-# 
-# data <- plyr::rbind.fill(disc_val, snuff) |>
-#   dplyr::mutate(smoking_history = factor(smoking_history, levels = c("Never smoker", "Non-smoker",
-#                                                      "Ex-smoker",
-#                                                      "Moist snuff tobacco user",
-#                                                      "e-cigarette user",
-#                                                      "Smoker")),
-#                 dataset = factor(dataset, levels = c("discovery set",
-#                                                      "validation set",
-#                                                      "e-cigarette set",
-#                                                      "moist snuff tobacco set"))) |>
-#   expand_celltypes()
-# 
-# 
-# a <- data |>
-#   ggplot(aes(x = celltype,
-#              y = cell_prop,
-#              fill = smoking_history)) +
-#   geom_boxplot() +
-#   facet_wrap(dataset ~ sampletype,
-#              nrow = 2) +
-#   coord_flip() +
-#   xlab("") + ylab("Cell proportion") +
-#   theme_minimal() +
-#   theme(legend.position = "top", aspect.ratio = 1.2) +
-#   scale_fill_manual(values = cols2[c(7, 6, 3, 4, 9, 1)], name = "")
-# 
-# # b progression --------------------
-# load("1-analysis-pipeline/4-datasets/1-output/tcga.Rdata")
-# 
-# matched <- tcga_data |>
-#   dplyr::group_by(barcode3) |>
-#   dplyr::count() |>
-#   dplyr::filter(n==2)
-# 
-# tcga <- tcga_data |>
-#   dplyr::filter(barcode3 %in% matched$barcode3) |>
-#   dplyr::mutate(dataset = project,
-#                 type = ifelse(type == "Control", "Control lung tissue", "Cancerous lung tissue"))
-# 
-# load("1-analysis-pipeline/4-datasets/1-output/cis_progression.Rdata")
-# cis <- pheno |>
-#   dplyr::mutate(dataset = "CIS set",
-#                 type = case_when(type == "Control" ~ "Control lung tissue",
-#                                 type == "Regression" ~ "Regressing CIS lesion",
-#                                 type == "Progression" ~ "Progressing CIS lesion"))
-# 
-# data <- plyr::rbind.fill(tcga, cis) |>
-#   dplyr::mutate(dataset = factor(dataset, levels = c("TCGA-LUAD", "TCGA-LUSC", "CIS set")),
-#                 type = factor(type, levels = c("Control lung tissue",
-#                                                "Regressing CIS lesion",
-#                                                "Progressing CIS lesion",
-#                                                "Cancerous lung tissue"))) |>
-#   expand_celltypes()
-# 
-# b <- data |>
-#   ggplot(aes(x = celltype,
-#              y = cell_prop,
-#              fill = type)) +
-#   geom_boxplot() +
-#   facet_wrap(~ dataset,
-#              nrow = 1) +
-#   coord_flip() +
-#   xlab("") + ylab("Cell proportion") +
-#   theme_minimal() +
-#   theme(legend.position = "top",
-#         , aspect.ratio = 1.2) +
-#   scale_fill_manual(values = cols2[c(9, 4, 3, 1)], name = "")
-# 
-# 
-# plot <- (a / b) + plot_layout(heights = c(2, 1)) + plot_annotation(tag_levels = "a")
-# 
-# grDevices::cairo_pdf("2-markdown/1-figure-panels/SFigure_4_celltypes.pdf",
-#                      width = 10, height = 11)
-# print(plot)
-# dev.off()
+```{r s7-epidish}
+source(here("0-source", "expand_celltypes.R"))
+
+# a smoking --------------------
+load(here("1-analysis-pipeline/0-data/data.Rdata"))
+disc_val <- data |>
+  dplyr::mutate(dataset = ifelse(dataset == "vaping set", "e-cigarette set", dataset)) |>
+  dplyr::filter(!(dataset == "discovery set" & smoking_history == "Ex-smoker"))
+
+load(here("1-analysis-pipeline/4-datasets/1-output/snuff_tobacco.Rdata"))
+snuff <- pheno |>
+  dplyr::mutate(dataset = "moist snuff tobacco set",
+                sampletype = "saliva",
+                smoking_history = case_when(smoking_current == "Control" ~ "Non-smoker",
+                                            smoking_current == "Moist Snuff User" ~ "Moist snuff tobacco user",
+                                            smoking_current == "Cigarette Smoker" ~ "Smoker"))
+
+data <- plyr::rbind.fill(disc_val, snuff) |>
+  dplyr::mutate(smoking_history = factor(smoking_history, levels = c("Never smoker", "Non-smoker",
+                                                     "Ex-smoker",
+                                                     "Moist snuff tobacco user",
+                                                     "e-cigarette user",
+                                                     "Smoker")),
+                dataset = factor(dataset, levels = c("discovery set",
+                                                     "validation set",
+                                                     "e-cigarette set",
+                                                     "moist snuff tobacco set"))) |>
+  expand_celltypes()
+
+
+a <- data |>
+  ggplot(aes(x = celltype,
+             y = cell_prop,
+             fill = smoking_history)) +
+  geom_boxplot() +
+  facet_wrap(dataset ~ sampletype,
+             nrow = 2) +
+  coord_flip() +
+  xlab("") + ylab("Cell proportion") +
+  theme_minimal() +
+  theme(legend.position = "top", aspect.ratio = 1.2) +
+  scale_fill_manual(values = cols2[c(7, 6, 3, 4, 9, 1)], name = "")
+
+# b progression --------------------
+load(here("1-analysis-pipeline/4-datasets/1-output/tcga.Rdata"))
+
+matched <- tcga_data |>
+  dplyr::group_by(barcode3) |>
+  dplyr::count() |>
+  dplyr::filter(n==2)
+
+tcga <- tcga_data |>
+  dplyr::filter(barcode3 %in% matched$barcode3) |>
+  dplyr::mutate(dataset = project,
+                type = ifelse(type == "Control", "Control lung tissue", "Cancerous lung tissue"))
+
+load(here("1-analysis-pipeline/4-datasets/1-output/cis_progression.Rdata"))
+cis <- pheno |>
+  dplyr::mutate(dataset = "CIS set",
+                type = case_when(type == "Control" ~ "Control lung tissue",
+                                type == "Regression" ~ "Regressing CIS lesion",
+                                type == "Progression" ~ "Progressing CIS lesion"))
+
+data <- plyr::rbind.fill(tcga, cis) |>
+  dplyr::mutate(dataset = factor(dataset, levels = c("TCGA-LUAD", "TCGA-LUSC", "CIS set")),
+                type = factor(type, levels = c("Control lung tissue",
+                                               "Regressing CIS lesion",
+                                               "Progressing CIS lesion",
+                                               "Cancerous lung tissue"))) |>
+  expand_celltypes()
+
+b <- data |>
+  ggplot(aes(x = celltype,
+             y = cell_prop,
+             fill = type)) +
+  geom_boxplot() +
+  facet_wrap(~ dataset,
+             nrow = 1) +
+  coord_flip() +
+  xlab("") + ylab("Cell proportion") +
+  theme_minimal() +
+  theme(legend.position = "top",
+        , aspect.ratio = 1.2) +
+  scale_fill_manual(values = cols2[c(9, 4, 3, 1)], name = "")
+
+
+plot <- (a / b) + plot_layout(heights = c(2, 1)) + plot_annotation(tag_levels = "a")
+
+grDevices::cairo_pdf(here("2-markdown/1-figure-panels/s7_celltypes.pdf"),
+                     width = 10, height = 11)
+print(plot)
+dev.off()
 ```
 
-\includegraphics{1-figure-panels/SFigure_4_celltypes.pdf}
+\includegraphics{1-figure-panels/s7_celltypes.pdf}
 
 \textbf{Supplementary Figure 7. Epigenetically inferred cell type composition in datasets used in this study. a} Inferred cell type proportions in surrogate samples (buccal, blood, cervical) in various datasets included in this study. \textbf{b} Inferred cell type proportions in lung tissue datasets. Values were inferred using the EpiDISH package and reference matrices centEpiFibIC.m, and additionally, hierarchical EpiDISH (hEpiDISH) was applied using the centBloodSub.m reference matrix.
 
@@ -622,892 +633,713 @@ dev.off()
 
 \newpage
 
-<!-- \invisiblesection{Supplementary Figure 6. Delta beta density values across cell types and samples in the discovery set.} -->
-
-<!-- ```{r extfig6-db-mean} -->
-<!-- # load("1-analysis-pipeline/2-output/WID_SMK_cpgs.Rdata") -->
-<!-- #  -->
-<!-- # # Buccal -->
-<!-- # db <- readRDS("1-analysis-pipeline/1-delta-beta/1a-buccal/delta-beta.Rds") -->
-<!-- # db <- db |> as.data.frame() |> -->
-<!-- #   tibble::rownames_to_column("cg") |> -->
-<!-- #   dplyr::filter(cg %in% WID_SMK_cpgs$cg) -->
-<!-- # db2 <- db |> -->
-<!-- #   dplyr::left_join(select(WID_SMK_cpgs, cg, set)) |> -->
-<!-- #   tidyr::pivot_longer(cols = c("db_epithelial", "db_immune"), -->
-<!-- #                       names_to = "db", -->
-<!-- #                       values_to = "dbvalue") |> -->
-<!-- #   dplyr::mutate(set = gsub("_", " ", set), -->
-<!-- #                 set = factor(set, levels = c("epithelial hypoM", -->
-<!-- #                                              "immune hypoM", -->
-<!-- #                                              "distal epithelial hyperM", -->
-<!-- #                                              "proximal epithelial hyperM"))) -->
-<!-- #  -->
-<!-- # ext5a <- db2 |> -->
-<!-- #   ggplot(aes(x = 1, -->
-<!-- #              y = dbvalue, -->
-<!-- #              colour = db, -->
-<!-- #              fill = db)) + -->
-<!-- #   ggdist::stat_halfeye(side = "right", -->
-<!-- #                        alpha = 0.65) + -->
-<!-- #   gghalves::geom_half_point_panel(range_scale = .4, -->
-<!-- #                             alpha = 0.7, -->
-<!-- #                             size = 0.5, -->
-<!-- #                             side = "l") + -->
-<!-- #   # geom_histogram(alpha = 0.5, -->
-<!-- #   #                bins = 400) + -->
-<!-- #   facet_wrap(~set, nrow = 4) + -->
-<!-- #   coord_flip() + -->
-<!-- #   theme_minimal() + -->
-<!-- #   scale_colour_manual(values = cols[c(2, 5)], -->
-<!-- #                       aesthetics = c("colour", "fill"), -->
-<!-- #                       name = "", -->
-<!-- #                       labels = c("epithelial", "immune")) + -->
-<!-- #   geom_hline(aes(yintercept = 0), -->
-<!-- #              linetype = "dashed") + -->
-<!-- #   theme(axis.ticks.y = element_blank(), -->
-<!-- #         axis.text.y = element_blank(), -->
-<!-- #         aspect.ratio = 0.2, -->
-<!-- #         legend.position = "top") + -->
-<!-- #   xlab("") + ylab("∆ β") + -->
-<!-- #   labs(subtitle = "Buccal sample") -->
-<!-- #  -->
-<!-- # # Cervical -->
-<!-- # db <- readRDS("1-analysis-pipeline/1-delta-beta/1b-cervical/delta-beta.Rds") -->
-<!-- #  -->
-<!-- # db <- db |> as.data.frame() |> -->
-<!-- #   tibble::rownames_to_column("cg") |> -->
-<!-- #   dplyr::filter(cg %in% WID_SMK_cpgs$cg) -->
-<!-- # db2 <- db |> -->
-<!-- #   dplyr::left_join(select(WID_SMK_cpgs, cg, set)) |> -->
-<!-- #   tidyr::pivot_longer(cols = c("db_epithelial", "db_immune"), -->
-<!-- #                       names_to = "db", -->
-<!-- #                       values_to = "dbvalue")|> -->
-<!-- #   dplyr::mutate(set = gsub("_", " ", set), -->
-<!-- #                 set = factor(set, levels = c("epithelial hypoM", -->
-<!-- #                                              "immune hypoM", -->
-<!-- #                                              "distal epithelial hyperM", -->
-<!-- #                                              "proximal epithelial hyperM"))) -->
-<!-- #  -->
-<!-- # ext5b <- db2 |> -->
-<!-- #   ggplot(aes(x = 1, -->
-<!-- #              y = dbvalue, -->
-<!-- #              colour = db, -->
-<!-- #              fill = db)) + -->
-<!-- #   ggdist::stat_halfeye(side = "right", -->
-<!-- #                        alpha = 0.65) + -->
-<!-- #   gghalves::geom_half_point_panel(range_scale = .4, -->
-<!-- #                             alpha = 0.7, -->
-<!-- #                             size = 0.5, -->
-<!-- #                             side = "l") + -->
-<!-- #   # geom_histogram(alpha = 0.5, -->
-<!-- #   #                bins = 400) + -->
-<!-- #   facet_wrap(~set, nrow = 4) + -->
-<!-- #   coord_flip() + -->
-<!-- #   theme_minimal() + -->
-<!-- #   scale_colour_manual(values = cols[c(2, 5)], -->
-<!-- #                       aesthetics = c("colour", "fill"), -->
-<!-- #                       name = "", -->
-<!-- #                       labels = c("epithelial", "immune")) + -->
-<!-- #   geom_hline(aes(yintercept = 0), -->
-<!-- #              linetype = "dashed") + -->
-<!-- #   theme(axis.ticks.y = element_blank(), -->
-<!-- #         axis.text.y = element_blank(), -->
-<!-- #         aspect.ratio = 0.2, -->
-<!-- #         legend.position = "top") + -->
-<!-- #   xlab("") + ylab("∆ β") + -->
-<!-- #   labs(subtitle = "Cervical sample") -->
-<!-- #  -->
-<!-- #  -->
-<!-- # # Blood -->
-<!-- # db <- readRDS("1-analysis-pipeline/1-delta-beta/1c-blood/delta-beta.Rds") -->
-<!-- #  -->
-<!-- # db <- db |> as.data.frame() |> -->
-<!-- #   tibble::rownames_to_column("cg") |> -->
-<!-- #   dplyr::filter(cg %in% WID_SMK_cpgs$cg) -->
-<!-- #  -->
-<!-- # db2 <- db |> -->
-<!-- #   dplyr::left_join(select(WID_SMK_cpgs, cg, set)) |> -->
-<!-- #   tidyr::pivot_longer(cols = c("db_lymphoid", "db_myeloid"), -->
-<!-- #                       names_to = "db", -->
-<!-- #                       values_to = "dbvalue")|> -->
-<!-- #   dplyr::mutate(set = gsub("_", " ", set), -->
-<!-- #                 set = factor(set, levels = c("epithelial hypoM", -->
-<!-- #                                              "immune hypoM", -->
-<!-- #                                              "distal epithelial hyperM", -->
-<!-- #                                              "proximal epithelial hyperM"))) -->
-<!-- #  -->
-<!-- # ext5c <- db2 |> -->
-<!-- #   ggplot(aes(x = 1, -->
-<!-- #              y = dbvalue, -->
-<!-- #              colour = db, -->
-<!-- #              fill = db)) + -->
-<!-- #   ggdist::stat_halfeye(side = "right", -->
-<!-- #                        alpha = 0.65) + -->
-<!-- #   gghalves::geom_half_point_panel(range_scale = .4, -->
-<!-- #                             alpha = 0.7, -->
-<!-- #                             size = 0.5, -->
-<!-- #                             side = "l") + -->
-<!-- #   # geom_histogram(alpha = 0.5, -->
-<!-- #   #                bins = 400) + -->
-<!-- #   facet_wrap(~set, nrow = 4) + -->
-<!-- #   coord_flip() + -->
-<!-- #   theme_minimal() + -->
-<!-- #   scale_colour_manual(values = cols[c(2, 5)], -->
-<!-- #                       aesthetics = c("colour", "fill"), -->
-<!-- #                       name = "", -->
-<!-- #                       labels = c("lymphoid", "myeloid")) + -->
-<!-- #   geom_hline(aes(yintercept = 0), -->
-<!-- #              linetype = "dashed") + -->
-<!-- #   theme(axis.ticks.y = element_blank(), -->
-<!-- #         axis.text.y = element_blank(), -->
-<!-- #         aspect.ratio = 0.2, -->
-<!-- #         legend.position = "top") + -->
-<!-- #   xlab("") + ylab("∆ β") + labs(subtitle = "Blood sample") -->
-<!-- #  -->
-<!-- # plot <- (ext5a|ext5b|ext5c) + -->
-<!-- #   plot_annotation(tag_levels = "a") -->
-<!-- #  -->
-<!-- # grDevices::cairo_pdf("2-markdown/1-figure-panels/SFigure_6_mean.pdf", -->
-<!-- #        width = 10, height = 5) -->
-<!-- # print(plot) -->
-<!-- # dev.off() -->
-<!-- ``` -->
-
-<!-- \includegraphics{1-figure-panels/SFigure_6_mean.pdf} -->
-
-<!-- \textbf{Supplementary Figure 6. Delta beta density values across cell types and samples in the discovery set. a} Delta beta in immune and epithelial cells in buccal samples. \textbf{b} Delta beta in immune and epithelial cells in cervical samples. \textbf{c} Delta beta in lymphoid and myeloid cells in blood samples.  -->
-
-<!-- \newpage -->
-
-
-
-\newpage
-
 \invisiblesection{Supplementary Figure 8. Correction of mean beta values for cell type heterogeneity.}
 
-```{r extfig8-correction}
-# load("1-analysis-pipeline/0-data/data.Rdata")
-# dat <- data |>
-#   dplyr::filter(sampletype == "buccal" & dataset == "discovery set" & !is.na(smoking_history)) |>
-#   droplevels() |>
-#   dplyr::mutate(smoking_history = factor(smoking_history, levels = c("Never smoker", "Ex-smoker", "Smoker")),
-#                 type = ifelse(smoking_history == "Never smoker", "Control", as.character(smoking_history)),
-#                 type = factor(type, levels = c("Control", "Ex-smoker", "Smoker"))) |>
-#   tibble::rowid_to_column("id")
-# 
-# ext8a <- dat |>
-#   ggplot(aes(x = ic,
-#              y = WID_SMK450_proximal_epithelial_hyperM,
-#              colour = smoking_history)) +
-#   geom_point(size = 0.5) +
-#   geom_smooth(method = "lm", se = F) +
-#   # ggpmisc::stat_poly_eq(aes(label = paste(after_stat(eq.label), # print Eq
-#   #                                after_stat(rr.label), sep = "*\", \"*"))) +
-#   # facet_wrap(~set,nrow = 1,
-#   #            labeller = labeller(set = labs)) +
-#   scale_colour_manual(values = cols2[c(7, 3, 1)], name = "") +
-#   theme_minimal() +
-#   theme(legend.position = "top",
-#         strip.background = element_rect(fill = cols2[5]),
-#         panel.border = element_rect(colour = "grey60",
-#                                     fill = NA),
-#         aspect.ratio = 0.8) +
-#   xlab("immune cell proportion") +
-#   ylab("mean β\n(uncorrected)")
-# 
-# grDevices::cairo_pdf("2-markdown/1-figure-panels/ext8a.pdf", width = 5, height = 5)
-# print(ext8a)
-# dev.off()
-# 
-# dat2 <- dat |>
-#   correct_ic(correction = "internal") |>
-#   tidyr::pivot_longer(cols = c(WID_SMK450_proximal_epithelial_hyperM,
-#                                WID_SMK450_proximal_epithelial_hyperM_corr),
-#                       names_to = "score",
-#                       values_to = "value") |>
-#   dplyr::mutate(ic = ifelse(score == "WID_SMK450_proximal_epithelial_hyperM_corr", 0, ic))
-# 
-# ext8b <- dat2 |>
-#   ggplot() +
-#   geom_point(aes(x = ic,
-#                  y = value,
-#                 colour = smoking_history,
-# 
-#                 shape = score),
-#                size = 1) +
-#   geom_line(aes(x = ic,
-#                 y = value,
-#                 group = id,
-#                 colour = smoking_history),
-#             alpha = 0.3,
-#             linetype = "dotdash") +
-#   scale_colour_manual(values = cols2[c(7, 3, 1)], name = "") +
-#     scale_shape_manual(values = c(19, 2)) +
-#   theme_minimal() +
-#   theme(legend.position = "top",
-#         strip.background = element_rect(fill = cols2[5]),
-#         panel.border = element_rect(colour = "grey60",
-#                                     fill = NA),
-#         aspect.ratio = 0.8) +
-#   xlab("immune cell proportion") +
-#   ylab("mean β\n(corrected)")
-# 
-# grDevices::cairo_pdf("2-markdown/1-figure-panels/ext8b.pdf", width = 5, height = 5)
-# print(ext8b)
-# dev.off()
-# 
-# # Raw values
-# dat2 <- dat |>
-#   tidyr::pivot_longer(cols = c("WID_SMK450_epithelial_hypoM", "WID_SMK450_immune_hypoM", "WID_SMK450_distal_epithelial_hyperM", "WID_SMK450_proximal_epithelial_hyperM"),
-#                       names_to = "set",
-#                       values_to = "value") |>
-#   dplyr::mutate(set = gsub("WID_SMK450_", "", set),
-#                 set = gsub("_", " ", set),
-#                 set = factor(set, levels = c("epithelial hypoM",
-#                                                "immune hypoM",
-#                                                "distal epithelial hyperM",
-#                                                "proximal epithelial hyperM")))
-# 
-# ext8c <- dat2 |>
-#   ggplot(aes(x = ic,
-#              y = value,
-#              colour = smoking_history)) +
-#   geom_point(size = 0.5) +
-#   geom_smooth(method = "lm", se = F) +
-#   facet_wrap(~set,nrow = 1) +
-#   scale_colour_manual(values = cols2[c(7, 3, 1)], name = "") +
-#   theme_minimal() +
-#   theme(legend.position = "none",
-#         panel.border = element_rect(colour = "grey60",
-#                                     fill = NA),
-#         aspect.ratio = 0.8) +
-#   xlab("immune cell proportion") +
-#   ylab("mean β\n(uncorrected)")
-# 
-# grDevices::cairo_pdf("2-markdown/1-figure-panels/ext8c.pdf", width = 12, height = 3.75)
-# print(ext8c)
-# dev.off()
-# 
-# 
-# # Corrected values
-# dat2 <- dat |>
-#   correct_ic(correction = "internal") |>
-#   tidyr::pivot_longer(cols = paste0(c("WID_SMK450_epithelial_hypoM", "WID_SMK450_immune_hypoM", "WID_SMK450_distal_epithelial_hyperM", "WID_SMK450_proximal_epithelial_hyperM"), "_corr"),
-#                       names_to = "set",
-#                       values_to = "value") |>
-#   dplyr::mutate(set = gsub("WID_SMK450_|_corr", "", set),
-#                 set = gsub("_", " ", set),
-#                 set = factor(set, levels = c("epithelial hypoM",
-#                                                "immune hypoM",
-#                                                "distal epithelial hyperM",
-#                                                "proximal epithelial hyperM")))
-# ext8d <- dat2 |>
-#   ggplot(aes(x = ic,
-#              y = value,
-#              colour = smoking_history)) +
-#   geom_point(size = 0.5,
-#              shape = 2) +
-#   geom_smooth(method = "lm", se = F) +
-#   facet_wrap(~set,nrow = 1) +
-#   scale_colour_manual(values = cols2[c(7, 3, 1)], name = "") +
-#   theme_minimal() +
-#   theme(legend.position = "none",
-#         panel.border = element_rect(colour = "grey60",
-#                                     fill = NA),
-#         aspect.ratio = 0.8) +
-#   xlab("immune cell proportion") +
-#   ylab("mean β\n(corrected)")
-# 
-# grDevices::cairo_pdf("2-markdown/1-figure-panels/ext8d.pdf", width = 12, height = 3.75)
-# print(ext8d)
-# dev.off()
+```{r s8-correction}
+load(here("1-analysis-pipeline/0-data/data.Rdata"))
+dat <- data |>
+  dplyr::filter(sampletype == "buccal" & dataset == "discovery set" & !is.na(smoking_history)) |>
+  droplevels() |>
+  dplyr::mutate(smoking_history = factor(smoking_history, levels = c("Never smoker", "Ex-smoker", "Smoker")),
+                type = ifelse(smoking_history == "Never smoker", "Control", as.character(smoking_history)),
+                type = factor(type, levels = c("Control", "Ex-smoker", "Smoker"))) |>
+  tibble::rowid_to_column("id")
+
+ext8a <- dat |>
+  ggplot(aes(x = ic,
+             y = WID_SMK450_proximal_epithelial_hyperM,
+             colour = smoking_history)) +
+  geom_point(size = 0.5) +
+  geom_smooth(method = "lm", se = F) +
+  # ggpmisc::stat_poly_eq(aes(label = paste(after_stat(eq.label), # print Eq
+  #                                after_stat(rr.label), sep = "*\", \"*"))) +
+  # facet_wrap(~set,nrow = 1,
+  #            labeller = labeller(set = labs)) +
+  scale_colour_manual(values = cols2[c(7, 3, 1)], name = "") +
+  theme_minimal() +
+  theme(legend.position = "top",
+        strip.background = element_rect(fill = cols2[5]),
+        panel.border = element_rect(colour = "grey60",
+                                    fill = NA),
+        aspect.ratio = 0.8) +
+  xlab("immune cell proportion") +
+  ylab("mean β\n(uncorrected)")
+
+grDevices::cairo_pdf(here("2-markdown/1-figure-panels/ext8a.pdf"), width = 5, height = 5)
+print(ext8a)
+dev.off()
+
+dat2 <- dat |>
+  correct_ic(correction = "internal") |>
+  tidyr::pivot_longer(cols = c(WID_SMK450_proximal_epithelial_hyperM,
+                               WID_SMK450_proximal_epithelial_hyperM_corr),
+                      names_to = "score",
+                      values_to = "value") |>
+  dplyr::mutate(ic = ifelse(score == "WID_SMK450_proximal_epithelial_hyperM_corr", 0, ic))
+
+ext8b <- dat2 |>
+  ggplot() +
+  geom_point(aes(x = ic,
+                 y = value,
+                colour = smoking_history,
+
+                shape = score),
+               size = 1) +
+  geom_line(aes(x = ic,
+                y = value,
+                group = id,
+                colour = smoking_history),
+            alpha = 0.3,
+            linetype = "dotdash") +
+  scale_colour_manual(values = cols2[c(7, 3, 1)], name = "") +
+    scale_shape_manual(values = c(19, 2)) +
+  theme_minimal() +
+  theme(legend.position = "top",
+        strip.background = element_rect(fill = cols2[5]),
+        panel.border = element_rect(colour = "grey60",
+                                    fill = NA),
+        aspect.ratio = 0.8) +
+  xlab("immune cell proportion") +
+  ylab("mean β\n(corrected)")
+
+grDevices::cairo_pdf(here("2-markdown/1-figure-panels/ext8b.pdf"), width = 5, height = 5)
+print(ext8b)
+dev.off()
+
+# Raw values
+dat2 <- dat |>
+  tidyr::pivot_longer(cols = c("WID_SMK450_epithelial_hypoM", "WID_SMK450_immune_hypoM", "WID_SMK450_distal_epithelial_hyperM", "WID_SMK450_proximal_epithelial_hyperM"),
+                      names_to = "set",
+                      values_to = "value") |>
+  dplyr::mutate(set = gsub("WID_SMK450_", "", set),
+                set = gsub("_", " ", set),
+                set = factor(set, levels = c("epithelial hypoM",
+                                               "immune hypoM",
+                                               "distal epithelial hyperM",
+                                               "proximal epithelial hyperM")))
+
+ext8c <- dat2 |>
+  ggplot(aes(x = ic,
+             y = value,
+             colour = smoking_history)) +
+  geom_point(size = 0.5) +
+  geom_smooth(method = "lm", se = F) +
+  facet_wrap(~set,nrow = 1) +
+  scale_colour_manual(values = cols2[c(7, 3, 1)], name = "") +
+  theme_minimal() +
+  theme(legend.position = "none",
+        panel.border = element_rect(colour = "grey60",
+                                    fill = NA),
+        aspect.ratio = 0.8) +
+  xlab("immune cell proportion") +
+  ylab("mean β\n(uncorrected)")
+
+grDevices::cairo_pdf(here("2-markdown/1-figure-panels/ext8c.pdf"), width = 12, height = 3.75)
+print(ext8c)
+dev.off()
+
+
+# Corrected values
+dat2 <- dat |>
+  correct_ic(correction = "internal") |>
+  tidyr::pivot_longer(cols = paste0(c("WID_SMK450_epithelial_hypoM", "WID_SMK450_immune_hypoM", "WID_SMK450_distal_epithelial_hyperM", "WID_SMK450_proximal_epithelial_hyperM"), "_corr"),
+                      names_to = "set",
+                      values_to = "value") |>
+  dplyr::mutate(set = gsub("WID_SMK450_|_corr", "", set),
+                set = gsub("_", " ", set),
+                set = factor(set, levels = c("epithelial hypoM",
+                                               "immune hypoM",
+                                               "distal epithelial hyperM",
+                                               "proximal epithelial hyperM")))
+ext8d <- dat2 |>
+  ggplot(aes(x = ic,
+             y = value,
+             colour = smoking_history)) +
+  geom_point(size = 0.5,
+             shape = 2) +
+  geom_smooth(method = "lm", se = F) +
+  facet_wrap(~set,nrow = 1) +
+  scale_colour_manual(values = cols2[c(7, 3, 1)], name = "") +
+  theme_minimal() +
+  theme(legend.position = "none",
+        panel.border = element_rect(colour = "grey60",
+                                    fill = NA),
+        aspect.ratio = 0.8) +
+  xlab("immune cell proportion") +
+  ylab("mean β\n(corrected)")
+
+grDevices::cairo_pdf(here("2-markdown/1-figure-panels/ext8d.pdf"), width = 12, height = 3.75)
+print(ext8d)
+dev.off()
 ```
 
-\includegraphics[trim = 0 10cm 0 0]{1-figure-panels/SFigure_8_correction.pdf}
+\includegraphics[trim = 0 10cm 0 0]{1-figure-panels/s8_correction.pdf}
 
 \textbf{Supplementary Figure 8. Correction of mean beta values for cell type heterogeneity. a} Raw mean beta values of proximal epithelial hyperM CpGs (450k) in the discovery set buccal samples. The correction approach is based on slopes and residuals for never, ex- and current smokers by fitting individual linear models for each type. \textbf{b} Visualisation of corrected mean beta of values in a, projecting values to immune cell proportion = 0. \textbf{c} Raw mean methylation values of all four groups of CpGs in buccal samples in the discovery set. \textbf{d} Corrected mean methylation values of all four groups of CpGs in buccal samples in the discovery set. 
 
 \newpage
 
-\invisiblesection{Supplementary Figure 9. Animation of correction.}
+\invisiblesection{Supplementary Figure 9. Correlation of corrected mean beta values with smoking pack years in the validation set (buccal and blood samples).}
 
-\textbf{Supplementary Figure 9. Animation of correction.} 
+```{r s9-spy}
+load(here("1-analysis-pipeline/0-data/data.Rdata"))
 
-See .mp4 file.
+# s figure 9a-------------------------
+dat <- data |>
+  dplyr::filter(dataset == "validation set" & sampletype == "buccal") |>
+  droplevels() |>
+  dplyr::mutate(smoking_history = factor(smoking_history, levels = c("Never smoker", "Ex-smoker", "Smoker"))) |>
+  correct_ic(correction = "internal")
+dat2 <- dat |>
+  tidyr::pivot_longer(cols = c("WID_SMK450_epithelial_hypoM_corr", "WID_SMK450_immune_hypoM_corr", "WID_SMK450_distal_epithelial_hyperM_corr", "WID_SMK450_proximal_epithelial_hyperM_corr"),
+                      names_to = "score",
+                      values_to = "value") |>
+  dplyr::mutate(score = gsub("WID_SMK450_|_corr", "", score),
+                score = gsub("_", " ", score),
+                score = factor(score, levels = c("epithelial hypoM",
+                                                 "immune hypoM",
+                                                 "distal epithelial hyperM",
+                                                 "proximal epithelial hyperM")),
+                smoking_history = factor(smoking_history, levels = c("Never smoker", "Ex-smoker", "Smoker")))
 
-\newpage
+a <- dat2 |>
+  filter(smoking_history != "Never smoker") |>
+  ggplot(aes(x = spy,
+             y = value,
+             colour = smoking_history)) +
+  geom_point(size = 0.5) +
+  geom_smooth(method = "lm", se = F) +
+  facet_wrap(~score,nrow = 1) +
+  scale_colour_manual(values = cols2[c(3, 1)], name = "") +
+  theme_minimal() +
+  theme(legend.position = "none",
+        # strip.background = element_rect(fill = cols2[5]),
+        panel.border = element_rect(colour = "grey60",
+                                    fill = NA),
+        aspect.ratio = 1,
+        axis.title.y = element_markdown()) +
+  ggpubr::stat_cor(size = 3,
+                   method = "pearson",
+                   show.legend = F) +
+  xlab("smoking pack years") +
+  ylab("mean β<br><span style='color:#224B5E;'><b>buccal samples</b></span></b><br>(corrected)")
 
-\invisiblesection{Supplementary Figure 10. Correlation of corrected mean beta values with smoking pack years in the validation set (buccal and blood samples).}
+# Fig b-------------------------
+dat <- data |>
+  dplyr::filter(dataset == "validation set" & sampletype == "blood") |>
+  droplevels() |>
+  dplyr::mutate(smoking_history = factor(smoking_history, levels = c("Never smoker", "Ex-smoker", "Smoker")))
 
-```{r ext9-spy}
-# load("1-analysis-pipeline/0-data/data.Rdata")
-# 
-# # s figure 9a-------------------------
-# dat <- data |>
-#   dplyr::filter(dataset == "validation set" & sampletype == "buccal") |>
-#   droplevels() |>
-#   dplyr::mutate(smoking_history = factor(smoking_history, levels = c("Never smoker", "Ex-smoker", "Smoker"))) |>
-#   correct_ic(correction = "internal")
-# dat2 <- dat |>
-#   tidyr::pivot_longer(cols = c("WID_SMK450_epithelial_hypoM_corr", "WID_SMK450_immune_hypoM_corr", "WID_SMK450_distal_epithelial_hyperM_corr", "WID_SMK450_proximal_epithelial_hyperM_corr"),
-#                       names_to = "score",
-#                       values_to = "value") |>
-#   dplyr::mutate(score = gsub("WID_SMK450_|_corr", "", score),
-#                 score = gsub("_", " ", score),
-#                 score = factor(score, levels = c("epithelial hypoM",
-#                                                  "immune hypoM",
-#                                                  "distal epithelial hyperM",
-#                                                  "proximal epithelial hyperM")),
-#                 smoking_history = factor(smoking_history, levels = c("Never smoker", "Ex-smoker", "Smoker")))
-# 
-# a <- dat2 |>
-#   filter(smoking_history != "Never smoker") |>
-#   ggplot(aes(x = spy,
-#              y = value,
-#              colour = smoking_history)) +
-#   geom_point(size = 0.5) +
-#   geom_smooth(method = "lm", se = F) +
-#   facet_wrap(~score,nrow = 1) +
-#   scale_colour_manual(values = cols2[c(3, 1)], name = "") +
-#   theme_minimal() +
-#   theme(legend.position = "none",
-#         # strip.background = element_rect(fill = cols2[5]),
-#         panel.border = element_rect(colour = "grey60",
-#                                     fill = NA),
-#         aspect.ratio = 1,
-#         axis.title.y = element_markdown()) +
-#   ggpubr::stat_cor(size = 3,
-#                    method = "pearson",
-#                    show.legend = F) +
-#   xlab("smoking pack years") +
-#   ylab("mean β<br><span style='color:#224B5E;'><b>buccal samples</b></span></b><br>(corrected)")
-# 
-# grDevices::cairo_pdf("2-markdown/1-figure-panels/ext9a.pdf", width = 9, height = 3.5)
-# print(a)
-# dev.off()
-# 
-# # Fig b-------------------------
-# dat <- data |>
-#   dplyr::filter(dataset == "validation set" & sampletype == "blood") |>
-#   droplevels() |>
-#   dplyr::mutate(smoking_history = factor(smoking_history, levels = c("Never smoker", "Ex-smoker", "Smoker")))
-# 
-# dat2 <- dat |>
-#   tidyr::pivot_longer(cols = c("WID_SMK450_epithelial_hypoM", "WID_SMK450_immune_hypoM", "WID_SMK450_distal_epithelial_hyperM", "WID_SMK450_proximal_epithelial_hyperM"),
-#                       names_to = "score",
-#                       values_to = "value") |>
-#   dplyr::mutate(score = gsub("WID_SMK450_", "", score),
-#                 score = gsub("_", " ", score),
-#                 ic = 1-(hepidish_Mono+hepidish_Neutro+hepidish_Eosino),
-#                 score = factor(score, levels = c("epithelial hypoM",
-#                                                  "immune hypoM",
-#                                                  "distal epithelial hyperM",
-#                                                  "proximal epithelial hyperM")),
-#                 smoking_history = factor(smoking_history, levels = c("Never smoker", "Ex-smoker", "Smoker")))
-# 
-# b <- dat2 |>
-#   filter(smoking_history != "Never smoker") |>
-#   ggplot(aes(x = spy,
-#              y = value,
-#              colour = smoking_history)) +
-#   geom_point(size = 0.5) +
-#   geom_smooth(method = "lm", se = F) +
-#   facet_wrap(~score,nrow = 1) +
-#   scale_colour_manual(values = cols2[c(3, 1)], name = "") +
-#   theme_minimal() +
-#   theme(legend.position = "none",
-#         # strip.background = element_rect(fill = cols2[5]),
-#         panel.border = element_rect(colour = "grey60",
-#                                     fill = NA),
-#         aspect.ratio = 1,
-#         axis.title.y = element_markdown()) +
-#   ggpubr::stat_cor(size = 3,
-#                    method = "pearson",
-#                    show.legend = F) +
-#   xlab("smoking pack years") +
-#   ylab("mean β<br><span style='color:#C0BE84;'><b>blood samples</b></span></b><br>(corrected)")
-# 
-# grDevices::cairo_pdf("2-markdown/1-figure-panels/ext9b.pdf", width = 9, height = 3.5)
-# print(b)
-# dev.off()
-# 
-# plot <- (a/b) + plot_annotation(tag_levels = "a")
-# grDevices::cairo_pdf("2-markdown/1-figure-panels/SFigure_9_spy.pdf", width = 9, height = 7)
-# print(plot)
-# dev.off()
+dat2 <- dat |>
+  tidyr::pivot_longer(cols = c("WID_SMK450_epithelial_hypoM", "WID_SMK450_immune_hypoM", "WID_SMK450_distal_epithelial_hyperM", "WID_SMK450_proximal_epithelial_hyperM"),
+                      names_to = "score",
+                      values_to = "value") |>
+  dplyr::mutate(score = gsub("WID_SMK450_", "", score),
+                score = gsub("_", " ", score),
+                ic = 1-(hepidish_Mono+hepidish_Neutro+hepidish_Eosino),
+                score = factor(score, levels = c("epithelial hypoM",
+                                                 "immune hypoM",
+                                                 "distal epithelial hyperM",
+                                                 "proximal epithelial hyperM")),
+                smoking_history = factor(smoking_history, levels = c("Never smoker", "Ex-smoker", "Smoker")))
+
+b <- dat2 |>
+  filter(smoking_history != "Never smoker") |>
+  ggplot(aes(x = spy,
+             y = value,
+             colour = smoking_history)) +
+  geom_point(size = 0.5) +
+  geom_smooth(method = "lm", se = F) +
+  facet_wrap(~score,nrow = 1) +
+  scale_colour_manual(values = cols2[c(3, 1)], name = "") +
+  theme_minimal() +
+  theme(legend.position = "none",
+        # strip.background = element_rect(fill = cols2[5]),
+        panel.border = element_rect(colour = "grey60",
+                                    fill = NA),
+        aspect.ratio = 1,
+        axis.title.y = element_markdown()) +
+  ggpubr::stat_cor(size = 3,
+                   method = "pearson",
+                   show.legend = F) +
+  xlab("smoking pack years") +
+  ylab("mean β<br><span style='color:#C0BE84;'><b>blood samples</b></span></b><br>(corrected)")
+
+plot <- (a/b) + plot_annotation(tag_levels = "a")
+grDevices::cairo_pdf(here("2-markdown/1-figure-panels/s9_spy.pdf"), width = 9, height = 7)
+print(plot)
+dev.off()
 ```
 
-\includegraphics{1-figure-panels/SFigure_9_spy.pdf}
+\includegraphics{1-figure-panels/s9_spy.pdf}
 
-\textbf{Supplementary Figure 10. Correlation of corrected mean beta values with smoking pack years (buccal and blood samples).} For buccal and blood samples, smoking pack year information was available. \textbf{a} Pearson correlation of corrected mean beta values of the four groups of CpGs with smoking pack years in buccal samples. \textbf{b} Pearson correlation of corrected mean beta values of the four groups of CpGs with smoking pack years in buccal samples.
+\textbf{Supplementary Figure 9. Correlation of corrected mean beta values with smoking pack years (buccal and blood samples).} For buccal and blood samples, smoking pack year information was available. \textbf{a} Pearson correlation of corrected mean beta values of the four groups of CpGs with smoking pack years in buccal samples. \textbf{b} Pearson correlation of corrected mean beta values of the four groups of CpGs with smoking pack years in buccal samples.
  
 \newpage
 
-\invisiblesection{Supplementary Figure 11. E-cigarette dataset raw and corrected methylation values and correlation of corrected scores with cigarette and e-cigarette use.}
+\invisiblesection{Supplementary Figure 10. E-cigarette dataset raw and corrected methylation values and correlation of corrected scores with cigarette and e-cigarette use.}
 
-```{r extfig10-e-cig}
-# load("1-analysis-pipeline/0-data/data.Rdata")
-# dat <- data |>
-#   dplyr::filter(dataset == "vaping set" & !is.na(smoking_history)) |>
-#   droplevels() |>
-#   dplyr::mutate(smoking_history = factor(smoking_history, levels = c("Never smoker", "e-cigarette user", "Smoker")),
-#                 type = ifelse(smoking_history == "Never smoker", "Control", as.character(smoking_history)),
-#                 type = factor(type, levels = c("Control", "e-cigarette user", "Smoker"))) |>
-#   tibble::rowid_to_column("id")
-# 
-# # EPIC scores
-# # Raw values - EPIC
-# dat2 <- dat |>
-#   tidyr::pivot_longer(cols = c("WID_SMK_epithelial_hypoM", "WID_SMK_immune_hypoM", "WID_SMK_distal_epithelial_hyperM", "WID_SMK_proximal_epithelial_hyperM"),
-#                       names_to = "set",
-#                       values_to = "value") |>
-#   dplyr::mutate(set = gsub("WID_SMK_", "", set),
-#                 set = gsub("_", " ", set),
-#                 set = factor(set, levels = c("epithelial hypoM",
-#                                             "immune hypoM",
-#                                                "distal epithelial hyperM",
-#                                                "proximal epithelial hyperM")),
-#                 smoking_history = factor(smoking_history, levels = c("Never smoker", "e-cigarette user", "Smoker")))
-# 
-# a <- dat2 |>
-#   ggplot(aes(x = ic,
-#              y = value,
-#              colour = smoking_history)) +
-#   geom_point(size = 0.5) +
-#   geom_smooth(method = "lm", se = F) +
-#   facet_wrap(~set,nrow = 1, scales = "free_y") +
-#   scale_colour_manual(values = cols2[c(7, 9, 1)], name = "") +
-#   theme_minimal() +
-#   theme(legend.position = "none",
-#         panel.border = element_rect(colour = "grey60",
-#                                     fill = NA),
-#         aspect.ratio = 0.8,
-#         plot.subtitle = element_markdown()) +
-#   xlab("immune cell proportion") +
-#   ylab("mean β\n(raw)")
-# 
-# # Corrected values
-# dat2 <- dat |>
-#   correct_ic(correction = "internal") |>
-#   tidyr::pivot_longer(cols = paste0(c("WID_SMK_epithelial_hypoM", "WID_SMK_immune_hypoM", "WID_SMK_distal_epithelial_hyperM", "WID_SMK_proximal_epithelial_hyperM"), "_corr"),
-#                       names_to = "set",
-#                       values_to = "value") |>
-#   dplyr::mutate(set = gsub("WID_SMK_|_corr", "", set),
-#                 set = gsub("_", " ", set),
-#                 set = factor(set, levels = c("epithelial hypoM",
-#                                                "immune hypoM",
-#                                                "distal epithelial hyperM",
-#                                                "proximal epithelial hyperM")),
-#                 smoking_history = factor(smoking_history, levels = c("Never smoker", "e-cigarette user", "Smoker")))
-# 
-# b <- dat2 |>
-#   ggplot(aes(x = ic,
-#              y = value,
-#              colour = smoking_history)) +
-#   geom_point(size = 0.5, shape = 2) +
-#   geom_smooth(method = "lm", se = F) +
-#   facet_wrap(~set,nrow = 1, scales = "free_y") +
-#   scale_colour_manual(values = cols2[c(7, 9, 1)], name = "") +
-#   theme_minimal() +
-#   theme(legend.position = "none",
-#         panel.border = element_rect(colour = "grey60",
-#                                     fill = NA),
-#         aspect.ratio = 0.8,
-#         plot.subtitle = element_markdown()) +
-#   xlab("immune cell proportion") +
-#   ylab("mean β\n(corrected)")
-# 
-# 
-# load("1-analysis-pipeline/0-data/data.Rdata")
-# 
-# c <-dat2 |>
-#   dplyr::filter(smoking_history == "e-cigarette user") |>
-#   ggplot(aes(x = vaping_smk_n,
-#              y = value,
-#              colour = smoking_history)) +
-#   geom_point(size = 0.5) +
-#   geom_smooth(method = "lm", se = F) +
-#   facet_wrap(~set,nrow = 1, scales = "free_y") +
-#   scale_colour_manual(values = cols2[c(8)], name = "") +
-#   theme_minimal() +
-#   theme(legend.position = "none",
-#         # strip.background = element_rect(fill = cols2[5]),
-#         panel.border = element_rect(colour = "grey60",
-#                                     fill = NA),
-#         aspect.ratio = 1) +
-#   ggpubr::stat_cor(size = 3,
-#                    method = "pearson",
-#                    show.legend = F) +
-#   xlab("cigarettes tried (ever)") +
-#   ylab("mean β\n(corrected)")
-# 
-# d <-dat2 |>
-#   dplyr::filter(smoking_history == "e-cigarette user") |>
-#   ggplot(aes(x = as.numeric(vaping_ml_day),
-#              y = value,
-#              colour = smoking_history)) +
-#   geom_point(size = 0.5) +
-#   geom_smooth(method = "lm", se = F) +
-#   facet_wrap(~set,nrow = 1, scales = "free_y") +
-#   scale_colour_manual(values = cols2[c(8)], name = "") +
-#   theme_minimal() +
-#   theme(legend.position = "none",
-#         # strip.background = element_rect(fill = cols2[5]),
-#         panel.border = element_rect(colour = "grey60",
-#                                     fill = NA),
-#         aspect.ratio = 1) +
-#   ggpubr::stat_cor(size = 3,
-#                    method = "pearson",
-#                    show.legend = F) +
-#   xlab("vaping mL/day") +
-#   ylab("mean β\n(corrected)")
-# 
-# plot <- (a/b/c/d) + plot_annotation(tag_levels = "a")
-# 
-# grDevices::cairo_pdf("2-markdown/1-figure-panels/SFigure_10_ecig.pdf", width = 10, height = 12)
-# print(plot)
-# dev.off()
+```{r s10-e-cig}
+load(here("1-analysis-pipeline/0-data/data.Rdata"))
+dat <- data |>
+  dplyr::filter(dataset == "vaping set" & !is.na(smoking_history)) |>
+  droplevels() |>
+  dplyr::mutate(smoking_history = factor(smoking_history, levels = c("Never smoker", "e-cigarette user", "Smoker")),
+                type = ifelse(smoking_history == "Never smoker", "Control", as.character(smoking_history)),
+                type = factor(type, levels = c("Control", "e-cigarette user", "Smoker"))) |>
+  tibble::rowid_to_column("id")
+
+# EPIC scores
+# Raw values - EPIC
+dat2 <- dat |>
+  tidyr::pivot_longer(cols = c("WID_SMK_epithelial_hypoM", "WID_SMK_immune_hypoM", "WID_SMK_distal_epithelial_hyperM", "WID_SMK_proximal_epithelial_hyperM"),
+                      names_to = "set",
+                      values_to = "value") |>
+  dplyr::mutate(set = gsub("WID_SMK_", "", set),
+                set = gsub("_", " ", set),
+                set = factor(set, levels = c("epithelial hypoM",
+                                            "immune hypoM",
+                                               "distal epithelial hyperM",
+                                               "proximal epithelial hyperM")),
+                smoking_history = factor(smoking_history, levels = c("Never smoker", "e-cigarette user", "Smoker")))
+
+a <- dat2 |>
+  ggplot(aes(x = ic,
+             y = value,
+             colour = smoking_history)) +
+  geom_point(size = 0.5) +
+  geom_smooth(method = "lm", se = F) +
+  facet_wrap(~set,nrow = 1, scales = "free_y") +
+  scale_colour_manual(values = cols2[c(7, 9, 1)], name = "") +
+  theme_minimal() +
+  theme(legend.position = "none",
+        panel.border = element_rect(colour = "grey60",
+                                    fill = NA),
+        aspect.ratio = 0.8,
+        plot.subtitle = element_markdown()) +
+  xlab("immune cell proportion") +
+  ylab("mean β\n(raw)")
+
+# Corrected values
+dat2 <- dat |>
+  correct_ic(correction = "internal") |>
+  tidyr::pivot_longer(cols = paste0(c("WID_SMK_epithelial_hypoM", "WID_SMK_immune_hypoM", "WID_SMK_distal_epithelial_hyperM", "WID_SMK_proximal_epithelial_hyperM"), "_corr"),
+                      names_to = "set",
+                      values_to = "value") |>
+  dplyr::mutate(set = gsub("WID_SMK_|_corr", "", set),
+                set = gsub("_", " ", set),
+                set = factor(set, levels = c("epithelial hypoM",
+                                               "immune hypoM",
+                                               "distal epithelial hyperM",
+                                               "proximal epithelial hyperM")),
+                smoking_history = factor(smoking_history, levels = c("Never smoker", "e-cigarette user", "Smoker")))
+
+b <- dat2 |>
+  ggplot(aes(x = ic,
+             y = value,
+             colour = smoking_history)) +
+  geom_point(size = 0.5, shape = 2) +
+  geom_smooth(method = "lm", se = F) +
+  facet_wrap(~set,nrow = 1, scales = "free_y") +
+  scale_colour_manual(values = cols2[c(7, 9, 1)], name = "") +
+  theme_minimal() +
+  theme(legend.position = "none",
+        panel.border = element_rect(colour = "grey60",
+                                    fill = NA),
+        aspect.ratio = 0.8,
+        plot.subtitle = element_markdown()) +
+  xlab("immune cell proportion") +
+  ylab("mean β\n(corrected)")
+
+
+load(here("1-analysis-pipeline/0-data/data.Rdata"))
+
+c <-dat2 |>
+  dplyr::filter(smoking_history == "e-cigarette user") |>
+  ggplot(aes(x = vaping_smk_n,
+             y = value,
+             colour = smoking_history)) +
+  geom_point(size = 0.5) +
+  geom_smooth(method = "lm", se = F) +
+  facet_wrap(~set,nrow = 1, scales = "free_y") +
+  scale_colour_manual(values = cols2[c(8)], name = "") +
+  theme_minimal() +
+  theme(legend.position = "none",
+        # strip.background = element_rect(fill = cols2[5]),
+        panel.border = element_rect(colour = "grey60",
+                                    fill = NA),
+        aspect.ratio = 1) +
+  ggpubr::stat_cor(size = 3,
+                   method = "pearson",
+                   show.legend = F) +
+  xlab("cigarettes tried (ever)") +
+  ylab("mean β\n(corrected)")
+
+d <-dat2 |>
+  dplyr::filter(smoking_history == "e-cigarette user") |>
+  ggplot(aes(x = as.numeric(vaping_ml_day),
+             y = value,
+             colour = smoking_history)) +
+  geom_point(size = 0.5) +
+  geom_smooth(method = "lm", se = F) +
+  facet_wrap(~set,nrow = 1, scales = "free_y") +
+  scale_colour_manual(values = cols2[c(8)], name = "") +
+  theme_minimal() +
+  theme(legend.position = "none",
+        # strip.background = element_rect(fill = cols2[5]),
+        panel.border = element_rect(colour = "grey60",
+                                    fill = NA),
+        aspect.ratio = 1) +
+  ggpubr::stat_cor(size = 3,
+                   method = "pearson",
+                   show.legend = F) +
+  xlab("vaping mL/day") +
+  ylab("mean β\n(corrected)")
+
+plot <- (a/b/c/d) + plot_annotation(tag_levels = "a")
+
+grDevices::cairo_pdf(here("2-markdown/1-figure-panels/s10_ecig.pdf"), width = 10, height = 12)
+print(plot)
+dev.off()
 ```
 
-\includegraphics{1-figure-panels/SFigure_10_ecig.pdf}
+\includegraphics{1-figure-panels/s10_ecig.pdf}
 
 \textbf{Supplementary Figure 11. E-cigarette dataset raw and corrected methylation values and correlation of corrected scores with cigarette and e-cigarette use. a} Raw methylation mean beta values for each group of CpGs. \textbf{b} Corrected methylation mean beta values in the same samples. \textbf{c} Correlation of methylation beta values and reported number of cigarettes tried (ever) by e-cigarette users. \textbf{d} Correlation of methylation beta values and reported mL/day use of e-cigarette liquid.
 
 \newpage
 
-\invisiblesection{Supplementary Figure 12. E-cigarette differential methylation at individual loci and gene set enrichment.}
+\invisiblesection{Supplementary Figure 11. E-cigarette differential methylation at individual loci and gene set enrichment.}
 
-```{r extfig11-ecig-heatmap}
-# # Load with smk cpgs
-# load("~/Dropbox/index-dev/SMK-index/16-manuscript/WID_SMK_code/1-analysis-pipeline/2-output/WID_SMK_cpgs.Rdata")
-# 
-# # Helper function for dbs
-# load_and_name <- function(path = "",
-#                           set = "",
-#                           type2 = ""){
-#   tmp <- readRDS(path) |> 
-#     as.data.frame() |> 
-#            tibble::rownames_to_column("cg") |> 
-#     dplyr::filter(cg %in% WID_SMK_cpgs$cg) |> 
-#            dplyr::mutate(set = set,
-#                          type2 = type2)
-#   
-#   return(tmp)
-# }
-# 
-# db_orig <- load_and_name(path = "1-analysis-pipeline/1-delta-beta/1a-buccal/delta-beta.Rds",
-#               set = "discovery",
-#               type2 = "smoker (discovery set)")
-# 
-# db_ecig <- load_and_name(path = "1-analysis-pipeline/6-output/delta-beta.Rds",
-#                          set = "ecig",
-#                          type2 = "e-cigarette user")
-# 
-# # Put together
-# dat <- plyr::rbind.fill(db_orig, db_ecig) |> 
-#   tidyr::pivot_wider(id_cols = "cg",
-#                      names_from = c("set", "type2"),
-#                      values_from = c("db_immune", "db_epithelial")) |> 
-#   tidyr::drop_na()
-# mat <- dat[,-1]
-# cgs <- dat$cg
-# 
-# colnames(mat) <- stringr::str_split(colnames(mat), "_", simplify = T)[,4]
-# mat2 <- t(mat)
-# 
-# x <- match(cgs, WID_SMK_cpgs$cg)
-# cg_sets <- WID_SMK_cpgs$set[x]
-# epi_imm  <- paste0(stringr::str_split(colnames(dat)[-1], "_", simplify = T)[,2], "\nfraction")
-# 
-# 
-# a <- Heatmap(mat2,
-#         column_split = cg_sets,
-#         row_split = epi_imm,
-#         show_column_names = F,
-#         show_column_dend = F,
-#         name = "∆ β",
-#         show_row_names = T,
-#         cluster_columns = T,
-#         cluster_rows = T,
-#         row_names_gp = grid::gpar(fontsize = 9),
-#         column_title_gp = grid::gpar(fontsize = 9),
-#         row_title_gp = grid::gpar(fontsize = 9),
-#         col = circlize::colorRamp2(breaks = seq(from = -0.2, to = 0.2, 
-#                                                 length.out = 9),
-#                                    colors = rev(cols2)))
-# 
-# grDevices::cairo_pdf("2-markdown/1-figure-panels/ext11a.pdf", width = 10, height = 2)
-# print(a)
-# dev.off()
-# 
-# # Enrichment ---------------
-# load("1-analysis-pipeline/8-output/epi_hypo_GO.Rdata")
-# load("1-analysis-pipeline/8-output/prox_epi_hyper_GO.Rdata")
-# 
-# 
-# b <- enrichplot::cnetplot(epi_hypo_react_all,
-#                      size = 3,
-#                      cex.params = list(category_label = 0.92,
-#                                        gene_label = 0.9),
-#                      color.params = list(category = cols[9],
-#                                          gene = "grey40"),
-#                      circular = F)
-# 
-# grDevices::pdf("2-markdown/1-figure-panels/ext11b.pdf", width = 6, height = 7)
-# print(b)
-# dev.off()
-# 
-# c <- enrichplot::cnetplot(prox_epi_hyper_react_all,
-#                      size = 3,
-#                      cex.params = list(category_label = 0.92,
-#                                        gene_label = 0.9),
-#                      color.params = list(category = cols[1],
-#                                          gene = "grey40"),
-#                      circular = F)
-# 
-# grDevices::pdf("2-markdown/1-figure-panels/ext11c.pdf", width = 6, height = 7)
-# print(c)
-# dev.off()
+```{r s11-ecig-heatmap}
+# Load with smk cpgs
+load(here("1-analysis-pipeline/2-output/WID_SMK_cpgs.Rdata"))
+
+# Helper function for dbs
+load_and_name <- function(path = "",
+                          set = "",
+                          type2 = ""){
+  tmp <- readRDS(path) |>
+    as.data.frame() |>
+           tibble::rownames_to_column("cg") |>
+    dplyr::filter(cg %in% WID_SMK_cpgs$cg) |>
+           dplyr::mutate(set = set,
+                         type2 = type2)
+
+  return(tmp)
+}
+
+db_orig <- load_and_name(path = here("1-analysis-pipeline/1-delta-beta/1a-buccal/delta-beta.Rds"),
+              set = "discovery",
+              type2 = "smoker (discovery set)")
+
+db_ecig <- load_and_name(path = here("1-analysis-pipeline/6-output/delta-beta.Rds"),
+                         set = "ecig",
+                         type2 = "e-cigarette user")
+
+# Put together
+dat <- plyr::rbind.fill(db_orig, db_ecig) |>
+  tidyr::pivot_wider(id_cols = "cg",
+                     names_from = c("set", "type2"),
+                     values_from = c("db_immune", "db_epithelial")) |>
+  tidyr::drop_na()
+mat <- dat[,-1]
+cgs <- dat$cg
+
+colnames(mat) <- stringr::str_split(colnames(mat), "_", simplify = T)[,4]
+mat2 <- t(mat)
+
+x <- match(cgs, WID_SMK_cpgs$cg)
+cg_sets <- WID_SMK_cpgs$set[x]
+epi_imm  <- paste0(stringr::str_split(colnames(dat)[-1], "_", simplify = T)[,2], "\nfraction")
+
+
+a <- Heatmap(mat2,
+        column_split = cg_sets,
+        row_split = epi_imm,
+        show_column_names = F,
+        show_column_dend = F,
+        name = "∆ β",
+        show_row_names = T,
+        cluster_columns = T,
+        cluster_rows = T,
+        row_names_gp = grid::gpar(fontsize = 9),
+        column_title_gp = grid::gpar(fontsize = 9),
+        row_title_gp = grid::gpar(fontsize = 9),
+        col = circlize::colorRamp2(breaks = seq(from = -0.2, to = 0.2,
+                                                length.out = 9),
+                                   colors = rev(cols2)))
+
+grDevices::cairo_pdf(here("2-markdown/1-figure-panels/ext11a.pdf"), width = 10, height = 2)
+print(a)
+dev.off()
+
+# Enrichment ---------------
+load(here("1-analysis-pipeline/7-output/epi_hypo_GO.Rdata"))
+load(here("1-analysis-pipeline/7-output/prox_epi_hyper_GO.Rdata"))
+
+b <- enrichplot::cnetplot(epi_hypo_react_all,
+                     size = 3,
+                     cex.params = list(category_label = 0.92,
+                                       gene_label = 0.9),
+                     color.params = list(category = cols[9],
+                                         gene = "grey40"),
+                     circular = F)
+
+grDevices::pdf(here("2-markdown/1-figure-panels/ext11b.pdf"), width = 6, height = 7)
+print(b)
+dev.off()
+
+c <- enrichplot::cnetplot(prox_epi_hyper_react_all,
+                     size = 3,
+                     cex.params = list(category_label = 0.92,
+                                       gene_label = 0.9),
+                     color.params = list(category = cols[1],
+                                         gene = "grey40"),
+                     circular = F)
+
+grDevices::pdf(here("2-markdown/1-figure-panels/ext11c.pdf"), width = 6, height = 7)
+print(c)
+dev.off()
 ```
 
-\includegraphics[trim = 0 12cm 0 0]{1-figure-panels/SFigure_11_ecig_enrich.pdf}
+\includegraphics[trim = 0 12cm 0 0]{1-figure-panels/s11_ecig-enrich.pdf}
 
 
-\textbf{Supplementary Figure 12. E-cigarette differential methylation at individual loci and gene set enrichment. a} Heatmap comparing delta beta values in the inferred immune and epithelial fractions in buccal samples of the discovery set and e-cigarette users. \textbf{b} Reactome pathway enrichment for sites sharing the same directionality in the epithelial fraction of epithelial hypoM as in smokers in the discovery set. \textbf{c} Reactome pathway enrichment for sites sharing the same directionality in the epithelial fraction of proximal epithelial hyperM as in smokers in the discovery set.
+\textbf{Supplementary Figure 11. E-cigarette differential methylation at individual loci and gene set enrichment. a} Heatmap comparing delta beta values in the inferred immune and epithelial fractions in buccal samples of the discovery set and e-cigarette users. \textbf{b} Reactome pathway enrichment for sites sharing the same directionality in the epithelial fraction of epithelial hypoM as in smokers in the discovery set. \textbf{c} Reactome pathway enrichment for sites sharing the same directionality in the epithelial fraction of proximal epithelial hyperM as in smokers in the discovery set.
 
 
-\invisiblesection{Supplementary Figure 13. Smokeless tobacco use dataset raw and corrected methylation values.}
+\invisiblesection{Supplementary Figure 12. Smokeless tobacco use dataset raw and corrected methylation values.}
 
-```{r extfig12-smokeless}
-# load("1-analysis-pipeline/4-datasets/1-output/snuff_tobacco.Rdata")
-# 
-# dat <- pheno |>
-#   dplyr::mutate(smoking_current = case_when(smoking_current == "Control" ~ "Non-smoker",
-#                                             smoking_current == "Cigarette Smoker" ~ "Smoker",
-#                                             smoking_current == "Moist Snuff User" ~ "Smokeless tobacco user"),
-#                 smoking_history = smoking_current,
-#                 smoking_history = factor(smoking_history, levels = c("Non-smoker", "Smokeless tobacco user", "Smoker"))) |>
-#   tibble::rowid_to_column("id")
-# 
-# dat2 <- dat |>
-#   tidyr::pivot_longer(cols = c("WID_SMK450_epithelial_hypoM", "WID_SMK450_immune_hypoM", "WID_SMK450_distal_epithelial_hyperM", "WID_SMK450_proximal_epithelial_hyperM"),
-#                       names_to = "set",
-#                       values_to = "value") |>
-#   dplyr::mutate(set = gsub("WID_SMK450_", "", set),
-#                 set = gsub("_", " ", set),
-#                 set = factor(set, levels = c("epithelial hypoM",
-#                                             "immune hypoM",
-#                                                "distal epithelial hyperM",
-#                                                "proximal epithelial hyperM")),
-#                 smoking_history = factor(smoking_history, levels = c("Non-smoker", "Smokeless tobacco user", "Smoker")))
-# 
-# a <- dat2 |>
-#   ggplot(aes(x = ic,
-#              y = value,
-#              colour = smoking_history)) +
-#   geom_point(size = 0.5) +
-#   geom_smooth(method = "lm", se = F) +
-#   facet_wrap(~set,nrow = 1, scales = "free_y") +
-#   scale_colour_manual(values = cols2[c(7, 4, 1)], name = "") +
-#   theme_minimal() +
-#   theme(legend.position = "top",
-#         panel.border = element_rect(colour = "grey60",
-#                                     fill = NA),
-#         aspect.ratio = 0.8,
-#         plot.subtitle = element_markdown()) +
-#   xlab("immune cell proportion") +
-#   ylab("mean β (raw)")
-# 
-# # Corrected values
-# dat2 <- dat |>
-#   correct_ic(correction = "internal") |>
-#   tidyr::pivot_longer(cols = paste0(c("WID_SMK450_epithelial_hypoM", "WID_SMK450_immune_hypoM", "WID_SMK450_distal_epithelial_hyperM", "WID_SMK450_proximal_epithelial_hyperM"), "_corr"),
-#                       names_to = "set",
-#                       values_to = "value") |>
-#   dplyr::mutate(set = gsub("WID_SMK450_|_corr", "", set),
-#                 set = gsub("_", " ", set),
-#                 set = factor(set, levels = c("epithelial hypoM",
-#                                                "immune hypoM",
-#                                                "distal epithelial hyperM",
-#                                                "proximal epithelial hyperM")),
-#                 smoking_history = factor(smoking_history, levels = c("Non-smoker", "Smokeless tobacco user", "Smoker")))
-# 
-# b <- dat2 |>
-#   ggplot(aes(x = ic,
-#              y = value,
-#              colour = smoking_history)) +
-#   geom_point(size = 0.5, shape = 2) +
-#   geom_smooth(method = "lm", se = F) +
-#   facet_wrap(~set,nrow = 1, scales = "free_y") +
-#   scale_colour_manual(values = cols2[c(7, 4, 1)], name = "") +
-#   theme_minimal() +
-#   theme(legend.position = "none",
-#         panel.border = element_rect(colour = "grey60",
-#                                     fill = NA),
-#         aspect.ratio = 0.8,
-#         plot.subtitle = element_markdown()) +
-#   xlab("immune cell proportion") +
-#   ylab("mean β (corrected)")
-# 
-# plot <- ((a)/(b)) + plot_annotation(tag_levels = "a")
-# 
-# grDevices::cairo_pdf("2-markdown/1-figure-panels/SFigure_12_smokelesstobacco.pdf", width = 10, height = 6)
-# print(plot)
-# dev.off()
+```{r s12-smokeless}
+load(here("1-analysis-pipeline/4-datasets/1-output/snuff_tobacco.Rdata"))
+
+dat <- pheno |>
+  dplyr::mutate(smoking_current = case_when(smoking_current == "Control" ~ "Non-smoker",
+                                            smoking_current == "Cigarette Smoker" ~ "Smoker",
+                                            smoking_current == "Moist Snuff User" ~ "Smokeless tobacco user"),
+                smoking_history = smoking_current,
+                smoking_history = factor(smoking_history, levels = c("Non-smoker", "Smokeless tobacco user", "Smoker"))) |>
+  tibble::rowid_to_column("id")
+
+dat2 <- dat |>
+  tidyr::pivot_longer(cols = c("WID_SMK450_epithelial_hypoM", "WID_SMK450_immune_hypoM", "WID_SMK450_distal_epithelial_hyperM", "WID_SMK450_proximal_epithelial_hyperM"),
+                      names_to = "set",
+                      values_to = "value") |>
+  dplyr::mutate(set = gsub("WID_SMK450_", "", set),
+                set = gsub("_", " ", set),
+                set = factor(set, levels = c("epithelial hypoM",
+                                            "immune hypoM",
+                                               "distal epithelial hyperM",
+                                               "proximal epithelial hyperM")),
+                smoking_history = factor(smoking_history, levels = c("Non-smoker", "Smokeless tobacco user", "Smoker")))
+
+a <- dat2 |>
+  ggplot(aes(x = ic,
+             y = value,
+             colour = smoking_history)) +
+  geom_point(size = 0.5) +
+  geom_smooth(method = "lm", se = F) +
+  facet_wrap(~set,nrow = 1, scales = "free_y") +
+  scale_colour_manual(values = cols2[c(7, 4, 1)], name = "") +
+  theme_minimal() +
+  theme(legend.position = "top",
+        panel.border = element_rect(colour = "grey60",
+                                    fill = NA),
+        aspect.ratio = 0.8,
+        plot.subtitle = element_markdown()) +
+  xlab("immune cell proportion") +
+  ylab("mean β (raw)")
+
+# Corrected values
+dat2 <- dat |>
+  correct_ic(correction = "internal") |>
+  tidyr::pivot_longer(cols = paste0(c("WID_SMK450_epithelial_hypoM", "WID_SMK450_immune_hypoM", "WID_SMK450_distal_epithelial_hyperM", "WID_SMK450_proximal_epithelial_hyperM"), "_corr"),
+                      names_to = "set",
+                      values_to = "value") |>
+  dplyr::mutate(set = gsub("WID_SMK450_|_corr", "", set),
+                set = gsub("_", " ", set),
+                set = factor(set, levels = c("epithelial hypoM",
+                                               "immune hypoM",
+                                               "distal epithelial hyperM",
+                                               "proximal epithelial hyperM")),
+                smoking_history = factor(smoking_history, levels = c("Non-smoker", "Smokeless tobacco user", "Smoker")))
+
+b <- dat2 |>
+  ggplot(aes(x = ic,
+             y = value,
+             colour = smoking_history)) +
+  geom_point(size = 0.5, shape = 2) +
+  geom_smooth(method = "lm", se = F) +
+  facet_wrap(~set,nrow = 1, scales = "free_y") +
+  scale_colour_manual(values = cols2[c(7, 4, 1)], name = "") +
+  theme_minimal() +
+  theme(legend.position = "none",
+        panel.border = element_rect(colour = "grey60",
+                                    fill = NA),
+        aspect.ratio = 0.8,
+        plot.subtitle = element_markdown()) +
+  xlab("immune cell proportion") +
+  ylab("mean β (corrected)")
+
+plot <- ((a)/(b)) + plot_annotation(tag_levels = "a")
+
+grDevices::cairo_pdf(here("2-markdown/1-figure-panels/s12_smokeless-tobacco.pdf"), width = 10, height = 6)
+print(plot)
+dev.off()
 ```
 
-\includegraphics{1-figure-panels/SFigure_12_smokelesstobacco.pdf}
+\includegraphics{1-figure-panels/s12_smokeless-tobacco.pdf}
 
-\textbf{Supplementary Figure 13. Smokeless tobacco use dataset raw and corrected methylation values. a} Raw methylation mean beta values for each set of CpGs. \textbf{b} Corrected methylation mean beta values in the same samples. 
+\textbf{Supplementary Figure 12. Smokeless tobacco use dataset raw and corrected methylation values. a} Raw methylation mean beta values for each set of CpGs. \textbf{b} Corrected methylation mean beta values in the same samples. 
 
-\invisiblesection{Supplementary Figure 14. Dependence of mean methylation values on immune cell composition in cancer tissue and carcinoma in situ lesions.}
+\invisiblesection{Supplementary Figure 13. Dependence of mean methylation values on immune cell composition in cancer tissue and carcinoma in situ lesions.}
 
-```{r fig13-tcga-cis-ic}
-# load("1-analysis-pipeline/4-datasets/1-output/tcga.Rdata")
-# #
-# # # Fig a - ic -----------------
-# # # isolate matched samples (same exposure only)
-# matched <- tcga_data |>
-#   dplyr::group_by(barcode3) |>
-#   dplyr::summarise(x = paste0(type, collapse = ",")) |>
-#   dplyr::filter(x %in% c("Control,Cancer", "Cancer,Control"))
-# 
-# tmp <- tcga_data |>
-#   dplyr::filter(barcode3 %in% matched$barcode3) |>
-#   tidyr::pivot_longer(cols = c("WID_SMK450_epithelial_hypoM", "WID_SMK450_immune_hypoM", "WID_SMK450_distal_epithelial_hyperM", "WID_SMK450_proximal_epithelial_hyperM"),
-#                       names_to = "score",
-#                       values_to = "value") |>
-#   dplyr::mutate(score = gsub("WID_SMK450_|", "", score),
-#                 score = gsub("_", " ", score),
-#                 score = factor(score, levels = c("epithelial hypoM",
-#                                                  "immune hypoM",
-#                                                  "distal epithelial hyperM",
-#                                                  "proximal epithelial hyperM")),
-#                 type = case_when(type == "Cancer" ~ "Cancer tissue",
-#                                  type == "Control" ~ "Matched normal tissue"),
-#                 type = factor(type, levels = c("Matched normal tissue",
-#                                                "Cancer tissue")))
-# 
-# a <- tmp |>
-#   ggplot(aes(x = ic,
-#              y = value,
-#              colour = type)) +
-#   geom_point() +
-#   geom_smooth(method = "lm", se = F) +
-#   facet_wrap(project~score, nrow = 2) +
-#   xlab("ic") +
-#   ylab("mean β\n")+
-#   scale_colour_manual(values = cols2[c(9,1)], name = "",
-#                       aesthetics = c("color")) +
-#   theme_minimal() +
-#   theme(legend.position = "top",
-#         # strip.background = element_rect(fill = cols2[5]),
-#         panel.border = element_rect(colour = "grey60",
-#                                     fill = NA),
-#         aspect.ratio = 1) +
-#   xlab("immune cell proportion") +
-#   ylab("mean β\n")
-# 
-# # Cervical
-# load("1-analysis-pipeline/4-datasets/1-output/cervical-cancer.Rdata")
-# 
-# matched = pheno |>
-#   dplyr::group_by(id) |>
-#   dplyr::count(type) |>
-#   tidyr::pivot_wider(id_cols = id,
-#                      names_from = type,
-#                      values_from = n) |>
-#   dplyr::filter(Cancer == 1 & Control==1)
-# 
-# tmp <- pheno |>
-#   dplyr::filter(id %in% matched$id) |>
-#   tidyr::pivot_longer(cols = c("WID_SMK450_epithelial_hypoM", "WID_SMK450_immune_hypoM", "WID_SMK450_distal_epithelial_hyperM", "WID_SMK450_proximal_epithelial_hyperM"),
-#                       names_to = "score",
-#                       values_to = "value") |>
-#   dplyr::mutate(score = gsub("WID_SMK450_|", "", score),
-#                 score = gsub("_", " ", score),
-#                 score = factor(score, levels = c("epithelial hypoM",
-#                                                  "immune hypoM",
-#                                                  "distal epithelial hyperM",
-#                                                  "proximal epithelial hyperM")),
-#                 type = case_when(type == "Cancer" ~ "Cancer tissue",
-#                                  type == "Control" ~ "Matched normal tissue"),
-#                 type = factor(type, levels = c("Matched normal tissue",
-#                                                "Cancer tissue")))
-# 
-# b<- tmp |>
-#   ggplot(aes(x = ic,
-#              y = value,
-#              colour = type)) +
-#   geom_point() +
-#   geom_smooth(method = "lm", se = F) +
-#   facet_wrap(~score, nrow = 1) +
-#   xlab("ic") +
-#   ylab("mean β\n")+
-#   scale_colour_manual(values = cols2[c(9,1)], name = "",
-#                       aesthetics = c("color")) +
-#   theme_minimal() +
-#   theme(legend.position = "top",
-#         # strip.background = element_rect(fill = cols2[5]),
-#         panel.border = element_rect(colour = "grey60",
-#                                     fill = NA),
-#         aspect.ratio = 1) +
-#   xlab("immune cell proportion") +
-#   ylab("mean β\n")
-# 
-# # Raw CIS values
-# load("1-analysis-pipeline/4-datasets/1-output/cis_progression.Rdata")
-# 
-# tmp <- pheno |>
-#   tidyr::pivot_longer(cols = c("WID_SMK450_epithelial_hypoM", "WID_SMK450_immune_hypoM", "WID_SMK450_distal_epithelial_hyperM", "WID_SMK450_proximal_epithelial_hyperM"),
-#                       names_to = "score",
-#                       values_to = "value") |>
-#   dplyr::mutate(score = gsub("WID_SMK450_|", "", score),
-#                 score = gsub("_", " ", score),
-#                 score = factor(score, levels = c("epithelial hypoM",
-#                                                  "immune hypoM",
-#                                                  "distal epithelial hyperM",
-#                                                  "proximal epithelial hyperM")),
-#                 type = case_when(type == "Control" ~ "Control tissue",
-#                                  type == "Regression" ~ "Regressing CIS lesion",
-#                                  type == "Progression" ~ "Progressing CIS lesion"),
-#                 type = factor(type, levels = c("Control tissue",
-#                                                "Regressing CIS lesion",
-#                                                "Progressing CIS lesion")))
-# 
-# c <- tmp |>
-#   ggplot(aes(x = ic,
-#              y = value,
-#              colour = type)) +
-#   geom_point(aes(shape = smoking_history),
-#              alpha = 0.8) +
-#   geom_smooth(method = "lm", se = F) +
-#   facet_wrap(~score, nrow = 1) +
-#   xlab("ic") +
-#   ylab("mean β\n")+
-#   scale_colour_manual(values = cols2[c(9,7,1)], name = "",
-#                       aesthetics = c("color")) +
-#   theme_minimal() +
-#   theme(legend.position = "top",
-#         # strip.background = element_rect(fill = cols2[5]),
-#         panel.border = element_rect(colour = "grey60",
-#                                     fill = NA),
-#         aspect.ratio = 1) +
-#   xlab("immune cell proportion") +
-#   ylab("mean β\n")
-# 
-# plot <- (a/b/c) + plot_annotation(tag_levels = "a") + plot_layout(heights = c(2, 1, 1))
-# 
-# grDevices::cairo_pdf(here("2-markdown/1-figure-panels/SFigure_13_tcga_ic.pdf"),
-#                      width = 10, height = 16)
-# print(plot)
-# dev.off()
+```{r s13-tcga-cis-ic}
+load(here("1-analysis-pipeline/4-datasets/1-output/tcga.Rdata"))
+#
+# # Fig a - ic -----------------
+# # isolate matched samples (same exposure only)
+matched <- tcga_data |>
+  dplyr::group_by(barcode3) |>
+  dplyr::summarise(x = paste0(type, collapse = ",")) |>
+  dplyr::filter(x %in% c("Control,Cancer", "Cancer,Control"))
+
+tmp <- tcga_data |>
+  dplyr::filter(barcode3 %in% matched$barcode3) |>
+  tidyr::pivot_longer(cols = c("WID_SMK450_epithelial_hypoM", "WID_SMK450_immune_hypoM", "WID_SMK450_distal_epithelial_hyperM", "WID_SMK450_proximal_epithelial_hyperM"),
+                      names_to = "score",
+                      values_to = "value") |>
+  dplyr::mutate(score = gsub("WID_SMK450_|", "", score),
+                score = gsub("_", " ", score),
+                score = factor(score, levels = c("epithelial hypoM",
+                                                 "immune hypoM",
+                                                 "distal epithelial hyperM",
+                                                 "proximal epithelial hyperM")),
+                type = case_when(type == "Cancer" ~ "Cancer tissue",
+                                 type == "Control" ~ "Matched normal tissue"),
+                type = factor(type, levels = c("Matched normal tissue",
+                                               "Cancer tissue")))
+
+a <- tmp |>
+  ggplot(aes(x = ic,
+             y = value,
+             colour = type)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = F) +
+  facet_wrap(project~score, nrow = 2) +
+  xlab("ic") +
+  ylab("mean β\n")+
+  scale_colour_manual(values = cols2[c(9,1)], name = "",
+                      aesthetics = c("color")) +
+  theme_minimal() +
+  theme(legend.position = "top",
+        # strip.background = element_rect(fill = cols2[5]),
+        panel.border = element_rect(colour = "grey60",
+                                    fill = NA),
+        aspect.ratio = 1) +
+  xlab("immune cell proportion") +
+  ylab("mean β\n")
+
+# Cervical
+load(here("1-analysis-pipeline/4-datasets/1-output/cervical-cancer.Rdata"))
+
+matched = pheno |>
+  dplyr::group_by(id) |>
+  dplyr::count(type) |>
+  tidyr::pivot_wider(id_cols = id,
+                     names_from = type,
+                     values_from = n) |>
+  dplyr::filter(Cancer == 1 & Control==1)
+
+tmp <- pheno |>
+  dplyr::filter(id %in% matched$id) |>
+  tidyr::pivot_longer(cols = c("WID_SMK450_epithelial_hypoM", "WID_SMK450_immune_hypoM", "WID_SMK450_distal_epithelial_hyperM", "WID_SMK450_proximal_epithelial_hyperM"),
+                      names_to = "score",
+                      values_to = "value") |>
+  dplyr::mutate(score = gsub("WID_SMK450_|", "", score),
+                score = gsub("_", " ", score),
+                score = factor(score, levels = c("epithelial hypoM",
+                                                 "immune hypoM",
+                                                 "distal epithelial hyperM",
+                                                 "proximal epithelial hyperM")),
+                type = case_when(type == "Cancer" ~ "Cancer tissue",
+                                 type == "Control" ~ "Matched normal tissue"),
+                type = factor(type, levels = c("Matched normal tissue",
+                                               "Cancer tissue")))
+
+b<- tmp |>
+  ggplot(aes(x = ic,
+             y = value,
+             colour = type)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = F) +
+  facet_wrap(~score, nrow = 1) +
+  xlab("ic") +
+  ylab("mean β\n")+
+  scale_colour_manual(values = cols2[c(9,1)], name = "",
+                      aesthetics = c("color")) +
+  theme_minimal() +
+  theme(legend.position = "top",
+        # strip.background = element_rect(fill = cols2[5]),
+        panel.border = element_rect(colour = "grey60",
+                                    fill = NA),
+        aspect.ratio = 1) +
+  xlab("immune cell proportion") +
+  ylab("mean β\n")
+
+# Raw CIS values
+load(here("1-analysis-pipeline/4-datasets/1-output/cis_progression.Rdata"))
+
+tmp <- pheno |>
+  tidyr::pivot_longer(cols = c("WID_SMK450_epithelial_hypoM", "WID_SMK450_immune_hypoM", "WID_SMK450_distal_epithelial_hyperM", "WID_SMK450_proximal_epithelial_hyperM"),
+                      names_to = "score",
+                      values_to = "value") |>
+  dplyr::mutate(score = gsub("WID_SMK450_|", "", score),
+                score = gsub("_", " ", score),
+                score = factor(score, levels = c("epithelial hypoM",
+                                                 "immune hypoM",
+                                                 "distal epithelial hyperM",
+                                                 "proximal epithelial hyperM")),
+                type = case_when(type == "Control" ~ "Control tissue",
+                                 type == "Regression" ~ "Regressing CIS lesion",
+                                 type == "Progression" ~ "Progressing CIS lesion"),
+                type = factor(type, levels = c("Control tissue",
+                                               "Regressing CIS lesion",
+                                               "Progressing CIS lesion")))
+
+c <- tmp |>
+  ggplot(aes(x = ic,
+             y = value,
+             colour = type)) +
+  geom_point(aes(shape = smoking_history),
+             alpha = 0.8) +
+  geom_smooth(method = "lm", se = F) +
+  facet_wrap(~score, nrow = 1) +
+  xlab("ic") +
+  ylab("mean β\n")+
+  scale_colour_manual(values = cols2[c(9,7,1)], name = "",
+                      aesthetics = c("color")) +
+  theme_minimal() +
+  theme(legend.position = "top",
+        # strip.background = element_rect(fill = cols2[5]),
+        panel.border = element_rect(colour = "grey60",
+                                    fill = NA),
+        aspect.ratio = 1) +
+  xlab("immune cell proportion") +
+  ylab("mean β\n")
+
+plot <- (a/b/c) + plot_annotation(tag_levels = "a") + plot_layout(heights = c(2, 1, 1))
+
+grDevices::cairo_pdf(here(here("2-markdown/1-figure-panels/s13_tcga-ic.pdf")),
+                     width = 10, height = 16)
+print(plot)
+dev.off()
 ```
 
-\includegraphics[width=0.8\textwidth, trim=0 1cm 0 0]{1-figure-panels/SFigure_13_tcga_ic.pdf}
+\includegraphics[width=0.8\textwidth, trim=0 1cm 0 0]{1-figure-panels/s13_tcga-ic.pdf}
 
-\textbf{Supplementary Figure 14. Dependence of mean methylation values on immune cell composition in cancer tissue and carcinoma in situ lesions.  a} Raw methylation mean beta values for each set of CpGs versus inferred immune cell proportion in TCGA-LUAD and TCGA-LUSC samples with matched control tissue. \textbf{b} Raw methylation mean beta values for each set of CpGs versus inferred immune cell proportion in cervical cancer versus normal control tissue. \textbf{c} Raw methylation mean beta values for each set of CpGs in control samples or regressing or progressing CIS lesions.
+\textbf{Supplementary Figure 13. Dependence of mean methylation values on immune cell composition in cancer tissue and carcinoma in situ lesions.  a} Raw methylation mean beta values for each set of CpGs versus inferred immune cell proportion in TCGA-LUAD and TCGA-LUSC samples with matched control tissue. \textbf{b} Raw methylation mean beta values for each set of CpGs versus inferred immune cell proportion in cervical cancer versus normal control tissue. \textbf{c} Raw methylation mean beta values for each set of CpGs in control samples or regressing or progressing CIS lesions.
 
 \newpage
 
@@ -1518,7 +1350,7 @@ See .mp4 file.
 \textbf{Supplementary Table 1. Sample overview of datasets used to investigate the impact of tobacco, e-cigarette use, or smokeless tobacco, on different cell types.} 
 
 ```{r stable1, eval=F}
-load("1-analysis-pipeline/0-data/data.Rdata")
+load(here("1-analysis-pipeline/0-data/data.Rdata"))
 
 disco <- data |>
   dplyr::filter(dataset %in% c("discovery set")) |>
@@ -1613,7 +1445,7 @@ vaping <- data |>
                                  name == "nsmk" ~ "Never smoker",
                                  name == "female" ~ "Female (%)"))
 
-load("1-analysis-pipeline/4-datasets/1-output/snuff_tobacco.Rdata")
+load(here("1-analysis-pipeline/4-datasets/1-output/snuff_tobacco.Rdata"))
 snuff <- pheno |>
   dplyr::mutate(sampletype = "saliva") |>
   dplyr::group_by(sampletype) |>
@@ -1711,9 +1543,9 @@ t1 <- tmp |>
   tab_footnote(footnote = html("* data not publicly deposited due to restrictions on informed consent."))
 
 t1 |>
-  gtsave("2-markdown/1-figure-panels/s-table-1.html")
+  gtsave(here("2-markdown/1-figure-panels/s-table-1.html"))
 
-pagedown::chrome_print("2-markdown/1-figure-panels/s-table-1.html", output = "2-markdown/1-figure-panels/s-table-1.pdf")
+pagedown::chrome_print(here("2-markdown/1-figure-panels/s-table-1.html"), output = here("2-markdown/1-figure-panels/s-table-1.pdf"))
 ```
 
 \includegraphics[trim = 0 5cm 0 0]{1-figure-panels/s-table-1.pdf}
@@ -1723,8 +1555,8 @@ pagedown::chrome_print("2-markdown/1-figure-panels/s-table-1.html", output = "2-
 \invisiblesection{Supplementary Table 2. Overview of CpGs associated with hyper- or hypomethylation in smokers compared to never smokers in at least one of the tissues or cell types.}
 
 ```{r stable2}
-load("1-analysis-pipeline/2-output/WID_SMK_cpgs.Rdata")
-load("1-analysis-pipeline/2-output/plot_matrix.Rdata")
+load(here("1-analysis-pipeline/2-output/WID_SMK_cpgs.Rdata"))
+load(here("1-analysis-pipeline/2-output/plot_matrix.Rdata"))
 
 mat <- mat |>
   as.data.frame() |>
@@ -1736,7 +1568,7 @@ table <- WID_SMK_cpgs |>
 
 table |>
   dplyr::arrange(chr, pos) |>
-  writexl::write_xlsx("2-markdown/2-tables/Suppl_Table_2.xlsx",col_names = T)
+  writexl::write_xlsx(here("2-markdown/2-tables/Suppl_Table_2.xlsx"),col_names = T)
 ```
 
 \textbf{Supplementary Table 2. Overview of CpGs associated with hyper or hypomethylation in smokers compared to never smokers in at least one of the tissues or cell types.}
@@ -1830,9 +1662,9 @@ t9 <- tmp |>
 
 
 t9 |>
-  gtsave("2-markdown/1-figure-panels/s-table-9.html")
+  gtsave(here("2-markdown/1-figure-panels/s-table-9.html"))
 
-pagedown::chrome_print("2-markdown/1-figure-panels/s-table-9.html", output = "2-markdown/1-figure-panels/s-table-9.pdf")
+pagedown::chrome_print(here("2-markdown/1-figure-panels/s-table-9.html"), output = here("2-markdown/1-figure-panels/s-table-9.pdf"))
 ```
 
 \includegraphics[trim = 0 8cm 0 0]{1-figure-panels/s-table-9.pdf}
@@ -1894,9 +1726,76 @@ t10 <- tmp |>
   tab_source_note(html("<b>Abbreviations</b>: CI, confidence interval; LC, lung cancer; n, number; OR, odds ratio."))
 
 t10 |>
-  gtsave("2-markdown/1-figure-panels/s-table-10.html")
+  gtsave(here("2-markdown/1-figure-panels/s-table-10.html"))
 
-pagedown::chrome_print("2-markdown/1-figure-panels/s-table-10.html", output = "2-markdown/1-figure-panels/s-table-10.pdf")
+pagedown::chrome_print(here("2-markdown/1-figure-panels/s-table-10.html"), output = here("2-markdown/1-figure-panels/s-table-10.pdf"))
 ```
 
 \includegraphics[trim = 0 5cm 0 0]{1-figure-panels/s-table-10.pdf}
+
+\newpage
+
+\section{Supplementary Movie}
+
+\invisiblesection{Supplementary Movie 1. Illustration of immune cell correction algorithm.}
+
+\textbf{Supplementary Movie 1. Illustration of immune cell correction algorithm.} Data is derived from Supplementary Figure 8a, b.
+
+```{r smovie1}
+library(gganimate)
+library(av)
+
+load(here("1-analysis-pipeline/0-data/data.Rdata"))
+source(here("0-source/correct_ic.R"))
+
+dat <- data |>
+  dplyr::filter(sampletype == "buccal" & dataset == "discovery set" & !is.na(smoking_history)) |>
+  droplevels() |>
+  dplyr::mutate(smoking_history = factor(smoking_history, levels = c("Never smoker", "Ex-smoker", "Smoker")),
+                type = ifelse(smoking_history == "Never smoker", "Control", as.character(smoking_history)),
+                type = factor(type, levels = c("Control", "Ex-smoker", "Smoker"))) |>
+  tibble::rowid_to_column("id")
+
+data_animation <- dat |>
+  correct_ic(correction = "internal") |>
+  tidyr::pivot_longer(cols = c(WID_SMK450_proximal_epithelial_hyperM,
+                               WID_SMK450_proximal_epithelial_hyperM_corr),
+                      names_to = "score",
+                      values_to = "value") |>
+  dplyr::mutate(ic = ifelse(score == "WID_SMK450_proximal_epithelial_hyperM_corr", 0, ic)) |> 
+  dplyr::mutate(animation = ifelse(grepl("corr", score), "2", "1"),
+                score = gsub("_corr", "", score)) |>
+  dplyr::select(type, score, value, ic, animation)
+# head(data_animation)
+
+plot <- data_animation |> 
+  ggplot(aes(x = ic,
+             y = value,
+             colour = type)) +
+  geom_point() +
+  scale_colour_manual(values = cols2[c(7, 3, 1)], name = "") +
+  scale_shape_manual(values = c(19, 2)) +
+  theme_minimal() +
+  theme(legend.position = "top",
+        strip.background = element_rect(fill = cols2[5]),
+        panel.border = element_rect(colour = "grey60",
+                                    fill = NA),
+        aspect.ratio = 0.8) +
+  xlab("immune cell proportion") +
+  ylab("mean β\n(corrected)") +
+  # Here comes the gganimate code
+  transition_states(
+    animation,
+    transition_length = 2,
+    state_length = 1
+  ) +
+  enter_fade() + 
+  exit_shrink() +
+  ease_aes('sine-in-out')
+
+# # anim_save(plot, file = '2-markdown/1-figure-panels/animation.gif')
+
+# # save animations:
+# b <- animate(plot, duration = 20, fps = 20, renderer = av_renderer())
+# anim_save(here("2-markdown/1-figure-panels/animation.mp4"), b)
+```

@@ -8,7 +8,7 @@ manhattan <- function(db,
   require(ggrepel)
   cols <- MetBrewer::met.brewer("Hokusai1", n = 9)
   
-  load("1-analysis-pipeline/2-output/WID_SMK_cpgs.Rdata")
+  load(here("1-analysis-pipeline/2-output/WID_SMK_cpgs.Rdata"))
   
   anno <- getAnnotation(IlluminaHumanMethylationEPICanno.ilm10b2.hg19, lociNames = db$cg)
   db$chr <- anno$chr

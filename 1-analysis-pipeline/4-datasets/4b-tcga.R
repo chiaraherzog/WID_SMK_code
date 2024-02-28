@@ -11,7 +11,8 @@ source("0-source/WID_SMK.R")
 source("0-source/smoking_mrs.R")
 
 projects <- c("TCGA-LUAD", "TCGA-LUSC")
-dir <- "<dir>" # path to directory to save files in
+# dir <- "<dir>" # path to directory to save files in
+dir <- '~/Documents/Work/data.nosync/tcga'
 
 # Access data:
 
@@ -163,6 +164,6 @@ for (id in project){
   )
   GDCdownload(query = query)
   data <- GDCprepare(query = query)
-  save(data, file = file.path('~/Documents/Work/data.nosync/tcga_sola/', id, '/expression/data_expression_full.Rdata'))
+  save(data, file = file.path(dir, id, '/expression/data_expression_full.Rdata'))
   
 }

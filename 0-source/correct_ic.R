@@ -11,7 +11,7 @@ correct_ic <- function(data, scores = c("WID_SMK_epithelial_hypoM",
   
   if(correction == "external"){
     
-    load("1-analysis-pipeline/5-output/coef.Rdata")
+    load(here("1-analysis-pipeline/5-output/coef.Rdata"))
     # Sum up residuals + relevant intercept (separate for never smokers, ex-smokers, and smokers) - using slopes defined in discovery set
     
     # Never smokers -----------------------

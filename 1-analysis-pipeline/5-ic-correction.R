@@ -1,4 +1,7 @@
 # IC correction: raw data for models
+
+cat("ic correction models ----------------------- \n")
+
 library(dplyr)
 
 load("1-analysis-pipeline/0-data/data.Rdata")

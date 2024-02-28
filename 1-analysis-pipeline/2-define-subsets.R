@@ -1,4 +1,7 @@
 # 2. Define subsets of CpGs
+
+cat("Defining subsets of CpGs (clustering) ----------------------- \n")
+
 library(here)
 library(dplyr)
 library(IlluminaHumanMethylationEPICanno.ilm10b4.hg19)
@@ -83,25 +86,24 @@ save(mat, file = "1-analysis-pipeline/2-output/plot_matrix.Rdata")
 # PCA
 library(factoextra)
 x <- FactoMineR::PCA(mat)
-factoextra::fviz_contrib(x, choice = 'var',axes = 1)
-factoextra::fviz_contrib(x, choice = 'var',axes = 2)
-factoextra::fviz_contrib(x, choice = 'var',axes = 3)
-factoextra::fviz_contrib(x, choice = 'var',axes = 4)
-factoextra::fviz_contrib(x, choice = 'var',axes = 5)
-factoextra::fviz_contrib(x, choice = 'var',axes = 6)
-factoextra::fviz_pca_biplot(x)
+# factoextra::fviz_contrib(x, choice = 'var',axes = 1)
+# factoextra::fviz_contrib(x, choice = 'var',axes = 2)
+# factoextra::fviz_contrib(x, choice = 'var',axes = 3)
+# factoextra::fviz_contrib(x, choice = 'var',axes = 4)
+# factoextra::fviz_contrib(x, choice = 'var',axes = 5)
+# factoextra::fviz_contrib(x, choice = 'var',axes = 6)
+# factoextra::fviz_pca_biplot(x)
 
 # HCLUST - additional clustering method
 cols2 <- MetBrewer::met.brewer("Hiroshige", n = 9)
 
-
-ComplexHeatmap::Heatmap(t(mat),
-                        clustering_distance_columns = 'manhattan',
-                        clustering_method_columns = 'ward.D',
-                        column_km = 4,show_column_names = F,
-                        col = circlize::colorRamp2(breaks = seq(from = -0.2, to = 0.2,
-                                                                        length.out = 9),
-                                                           colors = rev(cols2)))
+# ComplexHeatmap::Heatmap(t(mat),
+#                         clustering_distance_columns = 'manhattan',
+#                         clustering_method_columns = 'ward.D',
+#                         column_km = 4,show_column_names = F,
+#                         col = circlize::colorRamp2(breaks = seq(from = -0.2, to = 0.2,
+#                                                                         length.out = 9),
+#                                                            colors = rev(cols2)))
 
 
 # Create subsets for computation
@@ -111,6 +113,7 @@ u <- as.data.frame(u)
 rownames(u) <- sig
 
 library(ggplot2)
+
 u |> 
   ggplot(aes(x = V1, y = V2)) +
   geom_point()

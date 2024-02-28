@@ -5,25 +5,25 @@ library(ChAMP)
 options(timeout = max(300, getOption("timeout")))
 options(download.file.method.GEOquery = "wget")
 
-setwd("<dir>") # raw local directory of your choice
+# setwd("<dir>") # raw local directory of your choice
+dir <- '~/Documents/Work/data.nosync/GEO/'
 
 # Download pheno
 gse <- getGEO("GSE211668")
-dir.create("GSE211668")
+dir.create(file.path(dir, "GSE211668"))
 pheno <- pData(gse$GSE211668_series_matrix.txt.gz)
-setwd("GSE211668/") # create a folder
 
 # Download raw data
 list.files()
 getGEOSuppFiles("GSE211668", filter_regex = "GSE211668_UCL_Cervical_MatrixSignal.txt.gz", makeDirectory = F)
-gunzip("GSE211668_UCL_Cervical_MatrixSignal.txt.gz")
-file.copy(from = "GSE211668_UCL_Cervical_MatrixSignal.txt.gz",
-          to = "./")
-unlink("GSE211668/", recursive = T)
+gunzip(file.path(dir, "GSE211668/GSE211668/GSE211668_UCL_Cervical_MatrixSignal.txt.gz"))
+file.copy(from = file.path(dir, "GSE211668", "GSE211668/GSE211668_UCL_Cervical_MatrixSignal.txt.gz"),
+          to = file.path(dir, "GSE211668/."))
+unlink(file.path(dir, "GSE211668/GSE211668/", recursive = T))
 
 # Preprocess raw data from signal intensities
-readLines("GSE211668_UCL_Cervical_MatrixSignal.txt", n = 1)
-Mset <- minfi::readGEORawFile(filename = "GSE211668_UCL_Cervical_MatrixSignal.txt",
+readLines(file.path(dir, "GSE211668/GSE211668_UCL_Cervical_MatrixSignal.txt"), n = 1)
+Mset <- minfi::readGEORawFile(filename = file.path(dir, "GSE211668/GSE211668_UCL_Cervical_MatrixSignal.txt"),
                               sep = "\t",
                               Uname = "Unmethylated Signal",
                               Mname = "Methylated Signal",
@@ -41,9 +41,9 @@ plotQC(qc) # some low intensity samples but still above 9.5 threshold
 low_intensity_samples <- rownames(qc)[qc$mMed<INTENSITY_THRESHOLD | qc$uMed<INTENSITY_THRESHOLD] # no samples with intensity below threshold
 
 # Read in detP
-colnames <- strsplit(readLines("GSE211668_UCL_Cervical_MatrixSignal.txt", n = 1), "\t")[[1]]
+colnames <- strsplit(readLines(file.path(dir, "GSE211668/GSE211668_UCL_Cervical_MatrixSignal.txt"), n = 1), "\t")[[1]]
 select <- sort(grep("Detection Pval",colnames))
-detP <- data.table::fread("GSE211668_UCL_Cervical_MatrixSignal.txt",
+detP <- data.table::fread(file.path(dir, "GSE211668/GSE211668_UCL_Cervical_MatrixSignal.txt"),
                           sep = "\t",
                           select = select)
 

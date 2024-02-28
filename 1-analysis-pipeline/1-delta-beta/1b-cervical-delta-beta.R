@@ -6,19 +6,31 @@
 # EGAD IDs: EGAD00010002079, EGAD00010002232, tbc
 
 # Load in datasets (after eutopsQC) and find intersect of beta (if saved separately)
-setwd("~/Dropbox/index-dev/SMK-index/16-manuscript/WID_SMK_code/")
+cat('Starting EWAS: buccal\n')
+
+library(here)
+here::i_am("1-analysis-pipeline/1-delta-beta/1b-cervical-delta-beta.R")
+
+# add links to beta matrices:
+# beta_3c <- '<path-to-beta1>'
+beta_3c <- '~/Dropbox/data/3c/beta_merged.Rdata'
+# beta_3cval <- '<path-to-beta2>'
+beta_3cval <- '~/Dropbox/data/3c-ext-validation/beta_merged.Rdata'
+# beta_brca_ds1 <- '<path-to-beta3>'
+beta_brca_ds1 <- '~/Dropbox/data/brca-ds1/beta_merged.Rdata'
+
 cat("Load data ...")
 load("1-analysis-pipeline/0-data/data_int.Rdata")
 data <- data_int |> 
   dplyr::filter(dataset == "discovery (cervical)")
 
-load("~/Dropbox/data/3c/beta_merged.Rdata")
+load(beta_3c)
 beta_tmp1 <- beta_merged[,colnames(beta_merged) %in% rownames(data)]
 
-load("~/Dropbox/data/3c-ext-validation/beta_merged.Rdata")
+load(beta_3cval)
 beta_tmp2 <- beta_merged[,colnames(beta_merged) %in% rownames(data)]
 
-load("~/Dropbox/data/brca-ds1/beta_merged.Rdata")
+load(beta_brca_ds1)
 beta_tmp3 <- beta_merged[,colnames(beta_merged) %in% rownames(data)]
 
 # intersect cpgs
@@ -42,10 +54,13 @@ cat("Start delta-beta estimation ...\n")
 
 # Set up delta-beta
 source("0-source/estimateDeltaBeta.R")
-dir <- "~/Dropbox/index-dev/SMK-index/16-manuscript/WID_SMK_code/1-analysis-pipeline/1-delta-beta/1b-cervical/"
+dir <- "1-analysis-pipeline/1-delta-beta/1b-cervical/"
+
 estimateDeltaBeta(beta = beta,
                   pheno = data,
                   output = dir,
                   typevar = "smoking_history",
                   adjustment = c("age", "ic"),
                   base = "Non-smoker")
+
+cat("\n\nCervical EWAS done.\n")

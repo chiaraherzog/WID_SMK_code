@@ -5,26 +5,26 @@ library(ChAMP)
 options(timeout = max(300, getOption("timeout")))
 options(download.file.method.GEOquery = "wget")
 
-setwd("<dir>") # raw local directory of your choice
+# setwd("<dir>") # raw local directory of your choice
+dir <- '~/Documents/Work/data.nosync/GEO/'
 
 # Download pheno
 gse <- getGEO("GSE108123")
-dir.create("GSE108123")
+dir.create(file.path(dir, "GSE108123"))
 pheno <- pData(gse$GSE108123_series_matrix.txt.gz)
-setwd("GSE108123/") # create a folder
 
 # Download raw data
 list.files()
 getGEOSuppFiles("GSE108123", filter_regex = "GSE108123_matrix_signal_intensities.txt.gz",
                 fetch_files = T)
-gunzip("GSE108123_matrix_signal_intensities.txt")
-file.copy(from = "GSE108123_matrix_signal_intensities.txt",
-          to = "./")
-unlink("GSE108123/", recursive = T)
+gunzip(file.path(dir, "GSE108123", "GSE108123/GSE108123_matrix_signal_intensities.txt"))
+file.copy(from = file.path(dir, "GSE108123/", "GSE108123/GSE108123_matrix_signal_intensities.txt"),
+          to = file.path(dir, "GSE108123/."))
+unlink(file.path(dir, "GSE108123/GSE108123/"), recursive = T)
 
 # Preprocess raw data from signal intensities
-readLines("GSE108123_matrix_signal_intensities.txt", n = 1)
-Mset <- minfi::readGEORawFile(filename = "GSE108123_matrix_signal_intensities.txt",
+readLines(file.path(dir, "GSE108123/GSE108123_matrix_signal_intensities.txt"), n = 1)
+Mset <- minfi::readGEORawFile(filename = file.path(dir, "GSE108123/GSE108123_matrix_signal_intensities.txt"),
                        sep = "\t",
                        Uname = "Unmethylated Signal",
                        Mname = "Methylated Signal",
@@ -42,9 +42,9 @@ plotQC(qc) # some low intensity samples but still above 9.5 threshold
 low_intensity_samples <- rownames(qc)[qc$mMed<INTENSITY_THRESHOLD | qc$uMed<INTENSITY_THRESHOLD] # no samples with intensity below threshold
 
 # Read in detP
-colnames <- strsplit(readLines("GSE108123_matrix_signal_intensities.txt", n = 1), "\t")[[1]]
+colnames <- strsplit(readLines(file.path(dir, "GSE108123/GSE108123_matrix_signal_intensities.txt"), n = 1), "\t")[[1]]
 select <- sort(grep("Detection Pval",colnames))
-detP <- data.table::fread("GSE108123_matrix_signal_intensities.txt",
+detP <- data.table::fread(file.path(dir, "GSE108123/GSE108123_matrix_signal_intensities.txt"),
               sep = "\t",
               select = select)
 
