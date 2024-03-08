@@ -17,6 +17,8 @@ params:
   args: ''
 ---
 
+\pagenumbering{gobble}
+
 ```{r read_arg, include = F}
 args <-  params$args
 eval <- args[1]
@@ -64,7 +66,6 @@ source(here("0-source/plot_3_rocs.R"))
 source(here("0-source/plot_2_rocs.R"))
 ```
 
-
 \vspace*{4cm}
 
 
@@ -99,6 +100,8 @@ email: martin.widschwender@uibk.ac.at
 \newpage
   
 \section{Supplementary Figures}
+
+\newpage
 
 \invisiblesection{Supplementary Figure 1. Analysis workflow overview.}
 
@@ -1005,7 +1008,7 @@ dev.off()
 
 \includegraphics{1-figure-panels/s10_ecig.pdf}
 
-\textbf{Supplementary Figure 11. E-cigarette dataset raw and corrected methylation values and correlation of corrected scores with cigarette and e-cigarette use. a} Raw methylation mean beta values for each group of CpGs. \textbf{b} Corrected methylation mean beta values in the same samples. \textbf{c} Correlation of methylation beta values and reported number of cigarettes tried (ever) by e-cigarette users. \textbf{d} Correlation of methylation beta values and reported mL/day use of e-cigarette liquid.
+\textbf{Supplementary Figure 10. E-cigarette dataset raw and corrected methylation values and correlation of corrected scores with cigarette and e-cigarette use. a} Raw methylation mean beta values for each group of CpGs. \textbf{b} Corrected methylation mean beta values in the same samples. \textbf{c} Correlation of methylation beta values and reported number of cigarettes tried (ever) by e-cigarette users. \textbf{d} Correlation of methylation beta values and reported mL/day use of e-cigarette liquid.
 
 \newpage
 
@@ -1344,6 +1347,8 @@ dev.off()
 \newpage
 
 \section{Supplementary Tables}
+
+\newpage
 
 \invisiblesection{Supplementary Table 1. Sample overview}
 
